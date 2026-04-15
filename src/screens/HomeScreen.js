@@ -30,6 +30,7 @@ export default function HomeScreen({ navigation, route }) {
   const [showHints, setShowHints] = useState(false);
   const toastAnim = useRef(new Animated.Value(0)).current;
   const [toastMsg, setToastMsg] = useState('');
+  const fromSaved = useRef(false);
 
   const styles = useMemo(() => StyleSheet.create({
     safe:           { flex: 1, backgroundColor: colors.bg, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 },
@@ -76,6 +77,8 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     const openCard = route?.params?.openCard;
     if (!openCard) return;
+
+    fromSaved.current = true;
 
     setSelectedCategory('All');
 
@@ -178,6 +181,8 @@ export default function HomeScreen({ navigation, route }) {
               onNext={goNext}
               onPrev={goPrev}
               showHints={showHints}
+              instant={fromSaved.current}
+              onMounted={() => { fromSaved.current = false; }}
             />
           </View>
         ) : (

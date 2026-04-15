@@ -18,7 +18,7 @@ const SWIPE_THRESHOLD = 60;
 const SWIPE_DURATION  = 220;
 const WATERMARK       = { Ayah: '✦', Hadith: '☽', Story: '✺', Dua: '❋' };
 
-export default function SwipeCard({ card, onNext, onPrev, showHints }) {
+export default function SwipeCard({ card, onNext, onPrev, showHints, instant, onMounted }) {
   const { colors } = useTheme();
   const position  = useRef(new Animated.ValueXY()).current;
   const fadeAnim  = useRef(new Animated.Value(0)).current;
@@ -84,13 +84,21 @@ export default function SwipeCard({ card, onNext, onPrev, showHints }) {
     setExpanded(false);
     setNeedsReadMore(false);
     position.setValue({ x: 0, y: 0 });
-    fadeAnim.setValue(0);
+    fadeAnim.setValue(instant ? 1 : 0);
     swiping.current = false;
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 150,
-      useNativeDriver: true,
-    }).start();
+
+    if (instant) {
+      if (onMounted) onMounted();
+    } else {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }).start(() => {
+        if (onMounted) onMounted();
+      });
+    }
+
     isCardSaved(card.id).then(setSaved);
   }, [card.id]);
 
