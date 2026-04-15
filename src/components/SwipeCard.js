@@ -3,7 +3,7 @@ import {
   View, Text, StyleSheet, Animated, PanResponder,
   Dimensions, Share, TouchableOpacity, ScrollView, Modal, BackHandler, Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import {
   spacing, radius, shadow,
@@ -24,9 +24,11 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const fadeAnim  = useRef(new Animated.Value(0)).current;
   const heartAnim = useRef(new Animated.Value(1)).current;
   const [expanded,      setExpanded]      = useState(false);
-  const [needsReadMore, setNeedsReadMore] = useState(false);
   const [saved,         setSaved]         = useState(false);
-  const swiping = useRef(false);
+  const needsReadMore = card.explanation.length > 500;
+  const insets      = useSafeAreaInsets();
+  const swiping     = useRef(false);
+  const expandedRef = useRef(false);
 
   const catColor      = getCategoryColor(card.category, colors);
   const catLightColor = getCategoryLightColor(card.category, colors);
@@ -81,23 +83,17 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   }), [colors]);
 
   useEffect(() => {
-    setExpanded(false);
-    setNeedsReadMore(false);
     position.setValue({ x: 0, y: 0 });
-    fadeAnim.setValue(instant ? 1 : 0);
+    fadeAnim.setValue(0);
     swiping.current = false;
+    expandedRef.current = false;
+    setExpanded(false);
 
-    if (instant) {
-      if (onMounted) onMounted();
-    } else {
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }).start(() => {
-        if (onMounted) onMounted();
-      });
-    }
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
 
     isCardSaved(card.id).then(setSaved);
   }, [card.id]);
@@ -105,6 +101,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   useEffect(() => {
     if (!expanded) return;
     const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      expandedRef.current = false;
       setExpanded(false);
       return true;
     });
@@ -123,21 +120,29 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   };
 
   const panResponder = useRef(PanResponder.create({
-    onStartShouldSetPanResponder: () => false,
-    onMoveShouldSetPanResponder: (_, g) =>
-      !expanded && Math.abs(g.dy) > Math.abs(g.dx) && Math.abs(g.dy) > 8,
-    onPanResponderGrant: () => { swiping.current = false; },
+    onStartShouldSetPanResponder:        () => false,
+    onStartShouldSetPanResponderCapture: () => false,
+    onMoveShouldSetPanResponder: (_, g) => {
+      if (expandedRef.current) return false;
+      return Math.abs(g.dy) > Math.abs(g.dx) && Math.abs(g.dy) > 8;
+    },
+    onMoveShouldSetPanResponderCapture: () => false,
+    onPanResponderGrant: () => {
+      if (expandedRef.current) return;
+      swiping.current = false;
+    },
     onPanResponderMove: (_, g) => {
-      if (!expanded && !swiping.current) position.setValue({ x: 0, y: g.dy });
+      if (expandedRef.current || swiping.current) return;
+      position.setValue({ x: 0, y: g.dy });
     },
     onPanResponderRelease: (_, g) => {
-      if (expanded || swiping.current) return;
+      if (expandedRef.current || swiping.current) return;
       if (g.dy < -SWIPE_THRESHOLD)     flyOut('up');
       else if (g.dy > SWIPE_THRESHOLD) flyOut('down');
       else                             snapBack();
     },
     onPanResponderTerminate: () => {
-      if (!expanded && !swiping.current) snapBack();
+      if (!expandedRef.current && !swiping.current) snapBack();
     },
   })).current;
 
@@ -210,15 +215,12 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
             <Text
               style={styles.explanation}
               numberOfLines={8}
-              onTextLayout={(e) => {
-                setNeedsReadMore(e.nativeEvent.lines.length >= 8);
-              }}
             >
               {card.explanation}
             </Text>
             {needsReadMore && !expanded && (
               <TouchableOpacity
-                onPress={() => setExpanded(true)}
+                onPress={() => { expandedRef.current = true; setExpanded(true); }}
                 activeOpacity={0.7}
                 style={{ marginTop: spacing.sm }}
               >
@@ -255,9 +257,15 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
         visible={expanded}
         animationType="slide"
         transparent={false}
-        onRequestClose={() => setExpanded(false)}
+        statusBarTranslucent={false}
+        onRequestClose={() => { expandedRef.current = false; setExpanded(false); }}
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'bottom']}>
+        <View style={{
+          flex: 1,
+          backgroundColor: colors.bg,
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        }}>
 
           {/* Header band identical to card */}
           <View style={[styles.headerBand, { backgroundColor: catColor }]}>
@@ -269,7 +277,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 {card.tag && <Text style={styles.chipTagLight}> · {card.tag}</Text>}
               </View>
               <TouchableOpacity
-                onPress={() => setExpanded(false)}
+                onPress={() => { expandedRef.current = false; setExpanded(false); }}
                 activeOpacity={0.8}
                 style={{
                   width: 32,
@@ -303,7 +311,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
             <View style={[styles.divider, { backgroundColor: catLightColor }]} />
             <Text style={styles.explanation}>{card.explanation}</Text>
             <TouchableOpacity
-              onPress={() => setExpanded(false)}
+              onPress={() => { expandedRef.current = false; setExpanded(false); }}
               activeOpacity={0.7}
               style={{
                 marginTop: spacing.xl,
@@ -339,7 +347,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
             </Animated.View>
           </View>
 
-        </SafeAreaView>
+        </View>
       </Modal>
 
     </Animated.View>

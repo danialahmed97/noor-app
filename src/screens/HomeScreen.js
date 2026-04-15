@@ -21,7 +21,7 @@ function shuffleArray(arr) {
 }
 
 export default function HomeScreen({ navigation, route }) {
-  const { width } = useWindowDimensions();
+  const { width, height: windowHeight } = useWindowDimensions();
   const { colors, isDark, toggleTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [deck,    setDeck]    = useState([]);
@@ -30,7 +30,7 @@ export default function HomeScreen({ navigation, route }) {
   const [showHints, setShowHints] = useState(false);
   const toastAnim = useRef(new Animated.Value(0)).current;
   const [toastMsg, setToastMsg] = useState('');
-  const fromSaved = useRef(false);
+  const [openingFromSaved, setOpeningFromSaved] = useState(false);
 
   const styles = useMemo(() => StyleSheet.create({
     safe:           { flex: 1, backgroundColor: colors.bg, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 },
@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation, route }) {
     progressBg:     { flex: 1, height: 3, backgroundColor: colors.border, borderRadius: 2, overflow: 'hidden' },
     progressFill:   { height: '100%', backgroundColor: colors.primary, borderRadius: 2 },
     progressText:   { fontSize: scale(12), color: colors.textLight, fontWeight: '600', minWidth: 44, textAlign: 'right' },
-    cardArea:       { flex: 1, justifyContent: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.md, overflow: 'hidden' },
+    cardArea:       { flex: 1, justifyContent: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.md, maxHeight: windowHeight * 0.78, overflow: 'hidden', alignSelf: 'stretch' },
     empty:          { alignItems: 'center', paddingHorizontal: spacing.xl },
     emptyEmoji:     { fontSize: 56, marginBottom: spacing.md },
     emptyTitle:     { fontSize: scale(22), fontWeight: '700', color: colors.textDark, marginBottom: spacing.sm },
@@ -54,7 +54,7 @@ export default function HomeScreen({ navigation, route }) {
     restartBtnText: { color: '#FFF', fontWeight: '700', fontSize: scale(15) },
     toast:          { position: 'absolute', bottom: 110, alignSelf: 'center', backgroundColor: isDark ? 'rgba(76,175,125,0.9)' : 'rgba(13,80,22,0.9)', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm + 2, borderRadius: radius.pill },
     toastText:      { color: '#FFF', fontSize: scale(13), fontWeight: '600' },
-  }), [colors, isDark]);
+  }), [colors, isDark, windowHeight]);
 
   useEffect(() => {
     getHintsShown().then((shown) => {
@@ -78,7 +78,7 @@ export default function HomeScreen({ navigation, route }) {
     const openCard = route?.params?.openCard;
     if (!openCard) return;
 
-    fromSaved.current = true;
+    setOpeningFromSaved(true);
 
     setSelectedCategory('All');
 
@@ -181,8 +181,8 @@ export default function HomeScreen({ navigation, route }) {
               onNext={goNext}
               onPrev={goPrev}
               showHints={showHints}
-              instant={fromSaved.current}
-              onMounted={() => { fromSaved.current = false; }}
+              instant={openingFromSaved}
+              onMounted={() => setOpeningFromSaved(false)}
             />
           </View>
         ) : (
