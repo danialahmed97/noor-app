@@ -4,7 +4,7 @@
 //  (≤60 words), source, color accent
 // ─────────────────────────────────────────────────────────
 
-export const CATEGORIES = ['All', 'Ayah', 'Hadith', 'Story', 'Dua'];
+export const CATEGORIES = ['All', 'Story', 'Ayah', 'Dua', 'Hadith'];
 
 export const CATEGORY_COLORS = {
   Ayah:   '#1B5E20',   // Deep green
