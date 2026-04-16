@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation, route }) {
     progressBg:     { flex: 1, height: 3, backgroundColor: colors.border, borderRadius: 2, overflow: 'hidden' },
     progressFill:   { height: '100%', backgroundColor: colors.primary, borderRadius: 2 },
     progressText:   { fontSize: scale(12), color: colors.textLight, fontWeight: '600', minWidth: 44, textAlign: 'right' },
-    cardArea:       { flex: 1, justifyContent: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.md, maxHeight: windowHeight * 0.78, overflow: 'hidden', alignSelf: 'stretch' },
+    cardArea:       { flex: 1, justifyContent: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, overflow: 'hidden' },
     empty:          { alignItems: 'center', paddingHorizontal: spacing.xl },
     emptyEmoji:     { fontSize: 56, marginBottom: spacing.md },
     emptyTitle:     { fontSize: scale(22), fontWeight: '700', color: colors.textDark, marginBottom: spacing.sm },
@@ -174,7 +174,7 @@ export default function HomeScreen({ navigation, route }) {
       {/* ── Card area ── */}
       <View style={styles.cardArea}>
         {currentCard ? (
-          <View style={{ maxHeight: '100%', justifyContent: 'center' }}>
+          <View style={{ flex: 1, justifyContent: 'center', maxHeight: '100%' }}>
             <SwipeCard
               key={`${cardKey}-${currentCard.id}`}
               card={currentCard}

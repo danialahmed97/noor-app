@@ -1,17 +1,22 @@
 {
   "expo": {
-    "name": "Noor - Islamic Dawah",
+    "name": "Noor",
     "slug": "noor-dawah",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#121612"
     },
-    "icon": "./assets/icon.png",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-system-ui"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.noor.dawah"
@@ -22,7 +27,17 @@
         "backgroundColor": "#0D5016"
       },
       "package": "com.noor.dawah",
-      "softwareKeyboardLayoutMode": "pan"
+      "userInterfaceStyle": "automatic"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#121612",
+      "barStyle": "light-content",
+      "translucent": false
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0a625db5-899f-4e73-94bc-f9ab626cd232"
+      }
     }
   }
 }

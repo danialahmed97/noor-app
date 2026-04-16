@@ -25,7 +25,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const heartAnim = useRef(new Animated.Value(1)).current;
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
-  const needsReadMore = card.explanation.length > 500;
+  const needsReadMore = card.explanation.length > 450;
   const insets      = useSafeAreaInsets();
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
@@ -57,6 +57,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
       borderRadius: radius.lg,
       backgroundColor: colors.bgCard,
       overflow: 'hidden',
+      maxHeight: '100%',
     },
     headerBand:    { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.lg, position: 'relative', overflow: 'hidden' },
     watermark:     { position: 'absolute', bottom: -10, right: 16, fontSize: scale(80), opacity: 0.08, color: '#FFFFFF' },
@@ -69,7 +70,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     shareBtnText:  { fontSize: 15, color: '#FFFFFF', fontWeight: '600' },
     arabicText:    { fontSize: scale(22), lineHeight: scale(38), textAlign: 'right', writingDirection: 'rtl', fontWeight: '500', color: '#FFFFFF' },
     storyHeadline: { fontSize: scale(18), fontWeight: '700', color: '#FFFFFF', lineHeight: scale(26), marginTop: spacing.xs },
-    body:          { padding: spacing.lg },
+    body:          { padding: spacing.lg, overflow: 'hidden' },
     translation:   { fontSize: scale(17), lineHeight: scale(26), color: colors.textDark, fontWeight: '600', marginBottom: spacing.md },
     divider:       { height: 1.5, borderRadius: 1, marginBottom: spacing.md },
     explanation:   { fontSize: scale(14.5), lineHeight: scale(23), color: colors.textMid },

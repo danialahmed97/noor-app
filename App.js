@@ -3,17 +3,21 @@
 //  Inshorts-style swipeable Islamic content cards
 //  React Native + Expo
 // ─────────────────────────────────────────────────────────
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as SplashScreen from 'expo-splash-screen';
 
 import HomeScreen     from './src/screens/HomeScreen';
 import SavedScreen    from './src/screens/SavedScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+
+// Keep splash screen visible while we prepare
+SplashScreen.preventAutoHideAsync();
 
 const Tab = createBottomTabNavigator();
 
@@ -100,10 +104,31 @@ function AppContent() {
 }
 
 export default function App() {
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      // Aesthetic pause — 2 seconds on splash screen
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setAppReady(true);
+    }
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appReady]);
+
+  if (!appReady) return null;
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <AppContent />
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <AppContent />
+        </View>
       </ThemeProvider>
     </SafeAreaProvider>
   );
