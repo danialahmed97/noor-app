@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,6 +10,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import SavedScreen from './src/screens/SavedScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { Text } from 'react-native';
+import SplashAnimation from './src/components/SplashAnimation';
 
 // Keep splash screen visible until we are ready
 SplashScreen.preventAutoHideAsync();
@@ -83,15 +84,15 @@ function AppContent() {
 function Root() {
   const { colors, mode } = useTheme();
   const [appReady, setAppReady] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     async function prepare() {
       try {
-        // Wait for theme to resolve from AsyncStorage
         if (mode === null) return;
-        // Small pause for aesthetic effect
-        await new Promise(resolve => setTimeout(resolve, 800));
         setAppReady(true);
+        // Hide native splash immediately — JS splash takes over
+        await SplashScreen.hideAsync();
       } catch (e) {
         console.warn(e);
       }
@@ -99,20 +100,16 @@ function Root() {
     prepare();
   }, [mode]);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (appReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [appReady]);
-
-  if (!appReady) return null;
+  if (!appReady) return (
+    <View style={{ flex: 1, backgroundColor: '#0D5016' }} />
+  );
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: colors.bg }}
-      onLayout={onLayoutRootView}
-    >
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <AppContent />
+      {showSplash && (
+        <SplashAnimation onFinish={() => setShowSplash(false)} />
+      )}
     </View>
   );
 }
