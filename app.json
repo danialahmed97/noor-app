@@ -27,7 +27,8 @@
         "backgroundColor": "#0D5016"
       },
       "package": "com.noor.dawah",
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "versionCode": 2
     },
     "androidStatusBar": {
       "backgroundColor": "#121612",
