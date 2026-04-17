@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#121612"
+      "backgroundColor": "#0D5016"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -31,7 +31,7 @@
       "versionCode": 2
     },
     "androidStatusBar": {
-      "backgroundColor": "#121612",
+      "backgroundColor": "#0D5016",
       "barStyle": "light-content",
       "translucent": false
     },

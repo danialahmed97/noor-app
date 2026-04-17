@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet, Dimensions } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
+import { View, Text, Animated, StyleSheet } from 'react-native';
 
 export default function SplashAnimation({ onFinish }) {
   const arabicOpacity  = useRef(new Animated.Value(0)).current;
@@ -74,11 +72,7 @@ export default function SplashAnimation({ onFinish }) {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width,
-    height,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0D5016',
     alignItems: 'center',
     justifyContent: 'center',

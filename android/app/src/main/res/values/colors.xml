@@ -2,7 +2,7 @@
   <color name="colorPrimary">#0D5016</color>
   <color name="colorPrimaryDark">#121612</color>
   <color name="colorAccent">#C9A84C</color>
-  <color name="splashBackground">#121612</color>
-  <color name="splashscreen_background">#121612</color>
+  <color name="splashBackground">#0D5016</color>
+  <color name="splashscreen_background">#0D5016</color>
   <color name="iconBackground">#0D5016</color>
 </resources>
