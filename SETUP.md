@@ -7,12 +7,14 @@
 
 | Feature | Details |
 |---|---|
-| **Swipeable cards** | Swipe right to save, left to skip — Inshorts-style |
+| **Swipeable cards** | Swipe UP for next, DOWN for previous — Inshorts-style |
 | **4 content types** | Ayahs 📖, Hadiths 📜, Stories ✨, Duas 🤲 |
-| **35+ cards** | Curated authentic Islamic content |
+| **222 cards** | Curated authentic Islamic content |
 | **Category filter** | Filter by content type |
-| **Save collection** | Bookmarked cards persist on device |
+| **Save collection** | Tap ❤️ on any card; bookmarks persist on device |
 | **Share** | Share any card via WhatsApp, iMessage, etc. |
+| **Dark mode** | Light/dark toggle with system preference fallback |
+| **OTA updates** | JS-only updates via `expo-updates` (no store release needed) |
 | **Design** | Deep green + gold Islamic aesthetic |
 
 ---
@@ -99,17 +101,18 @@ Install EAS CLI first: `npm install -g eas-cli`
 
 ## Tech Stack
 
-- **Expo SDK 51** — React Native framework
+- **Expo SDK 54** — React Native framework
 - **React Navigation** — Bottom tab navigation
 - **AsyncStorage** — Local card saving (no backend needed)
 - **React Native Animated** — Smooth swipe gestures (zero extra deps)
+- **expo-updates** — OTA JS bundle delivery
+- **expo-splash-screen** — Native + JS animated splash sequence
 
 ---
 
 ## Next Steps / Ideas
 
 - 🔔 Daily notification with a random card (use `expo-notifications`)
-- 🌙 Dark mode support
 - 🌐 Arabic language toggle
 - 🔊 Audio recitation for Ayahs and Duas
 - 🗂️ Content from a live API / CMS

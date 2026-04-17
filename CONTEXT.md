@@ -193,7 +193,9 @@ Animated overlay rendered on top of `AppContent` after the native splash hides.
 
 ## SwipeCard.js
 
-**Props:** `card`, `onNext`, `onPrev`, `showHints`, `instant`, `onMounted` — note: `instant` and `onMounted` are accepted but not yet wired up inside SwipeCard (entry animation always runs)
+**Props:** `card`, `onNext`, `onPrev`, `showHints`, `instant`, `onMounted`
+- `instant={true}` skips the 150ms fade-in (sets `fadeAnim` to 1 directly) — used when opening a card from SavedScreen so there's no redundant fade
+- `onMounted()` is called after the card is ready (after fade completes, or immediately when `instant=true`) — used by HomeScreen to reset the `openingFromSaved` flag
 
 **Gesture:** Vertical `PanResponder` (ignores horizontal). 60px threshold. Up → `onNext()`, Down → `onPrev()`. Snap-back under threshold. Blocked when "Read More" modal is open.
 
@@ -230,6 +232,21 @@ Animated overlay rendered on top of `AppContent` after the native splash hides.
 - Card press: Navigates to Home tab with `openCard` param → HomeScreen re-arranges deck
 
 **Data:** `useFocusEffect` reloads from AsyncStorage on every tab focus.
+
+---
+
+## SettingsScreen.js
+
+Hero section (Arabic "نور" + tagline), then three sections: CONTENT LIBRARY, HOW TO USE, DISCLAIMER, and a version footer.
+
+**HOW TO USE steps (7 items):**
+1. 👆 Swipe UP to move to the next card
+2. 👇 Swipe DOWN to go back to the previous card
+3. 🤍 Tap the heart in the card footer to save a card
+4. ↗ Tap the share icon to send via WhatsApp, iMessage, etc.
+5. ☪️ Use the category filter to focus on Ayahs, Hadiths, Stories, or Duas
+6. ↺ Tap the refresh icon to reshuffle the deck anytime
+7. ☀️ Tap the sun / moon icon to switch between light and dark mode
 
 ---
 

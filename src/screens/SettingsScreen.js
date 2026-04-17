@@ -29,6 +29,7 @@ const HOW_TO_USE = [
   { icon: '↗',  text: 'Tap the share icon to send a card via WhatsApp, iMessage, etc.' },
   { icon: '☪️', text: 'Use the category filter to focus on Ayahs, Hadiths, Stories, or Duas' },
   { icon: '↺',  text: 'Tap the refresh icon to reshuffle the deck anytime' },
+  { icon: '☀️', text: 'Tap the sun / moon icon to switch between light and dark mode' },
 ];
 
 export default function SettingsScreen() {

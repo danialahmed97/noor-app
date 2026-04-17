@@ -85,16 +85,21 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
   useEffect(() => {
     position.setValue({ x: 0, y: 0 });
-    fadeAnim.setValue(0);
     swiping.current = false;
     expandedRef.current = false;
     setExpanded(false);
 
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 150,
-      useNativeDriver: true,
-    }).start();
+    if (instant) {
+      fadeAnim.setValue(1);
+      onMounted?.();
+    } else {
+      fadeAnim.setValue(0);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }).start(() => onMounted?.());
+    }
 
     isCardSaved(card.id).then(setSaved);
   }, [card.id]);
