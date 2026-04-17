@@ -254,7 +254,7 @@ export default function SavedScreen({ navigation }) {
           <Text style={styles.emptyEmoji}>🤲</Text>
           <Text style={styles.emptyTitle}>No saved cards yet</Text>
           <Text style={styles.emptySubtitle}>
-            Swipe right on any card from the home feed to save it here.
+            Tap the heart ❤️ on any card to save it to your collection.
           </Text>
         </View>
       ) : (

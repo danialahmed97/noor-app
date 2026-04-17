@@ -193,13 +193,13 @@ Animated overlay rendered on top of `AppContent` after the native splash hides.
 
 ## SwipeCard.js
 
-**Props:** `card`, `onNext`, `onPrev`, `showHints`, `instant`, `onMounted`
+**Props:** `card`, `onNext`, `onPrev`, `showHints`, `instant`, `onMounted` — note: `instant` and `onMounted` are accepted but not yet wired up inside SwipeCard (entry animation always runs)
 
 **Gesture:** Vertical `PanResponder` (ignores horizontal). 60px threshold. Up → `onNext()`, Down → `onPrev()`. Snap-back under threshold. Blocked when "Read More" modal is open.
 
 **Card layout (top to bottom):**
 1. Colored header band: category chip (emoji + name + watermark symbol) + share button
-2. Arabic text (right-aligned, gold-brown) — shown for Ayah / Hadith / Dua
+2. Arabic text (right-aligned, white #FFFFFF) — shown inside the colored header band for Ayah / Hadith / Dua
 3. Translation text (bold, 17px)
 4. Thin colored divider
 5. Explanation (8-line truncate; "Read more" link if >450 chars opens fullscreen modal)
@@ -217,7 +217,7 @@ Animated overlay rendered on top of `AppContent` after the native splash hides.
 
 **Header:** "My Collection" + dynamic subtitle ("X cards saved")
 
-**Empty state:** 🤲 emoji + instructions
+**Empty state:** 🤲 emoji + "No saved cards yet" + "Tap the heart ❤️ on any card to save it to your collection."
 
 **Card list:** FlatList, 30px separator, each card shows:
 - Category chip + tag | Share (↗) + Remove (✕) buttons
