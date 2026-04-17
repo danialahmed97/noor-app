@@ -6,11 +6,12 @@
 
 ## What Is This
 
-**Noor - Islamic Dawah** is a React Native / Expo mobile app for iOS and Android.
-It delivers curated Islamic content (Quranic verses, hadiths, stories, duas) in a swipeable card interface — inspired by Inshorts. No backend. Fully offline. Content is bundled in the app.
+**Noor** is a React Native / Expo mobile app for iOS and Android. It delivers curated Islamic content (Quranic verses, hadiths, stories, duas) in a swipeable card interface — inspired by Inshorts. No backend. Fully offline. Content is bundled in the app.
 
 **Project path:** `/Users/danialahmedbarbhuiya/My Companies/noor-app/`
 **Bundle ID:** `com.noor.dawah` (iOS + Android)
+**EAS Project ID:** `0a625db5-899f-4e73-94bc-f9ab626cd232`
+**GitHub:** `https://github.com/danialahmed97/noor-app`
 
 ---
 
@@ -29,6 +30,9 @@ It delivers curated Islamic content (Quranic verses, hadiths, stories, duas) in 
 | Icons | @expo/vector-icons ^15.0.3 |
 | Safe Area | react-native-safe-area-context ~5.6.0 |
 | Screens | react-native-screens ~4.16.0 |
+| Splash | expo-splash-screen ~31.0.13 |
+| OTA Updates | expo-updates ~29.0.16 |
+| System UI | expo-system-ui ~6.0.9 |
 | Dev tools | babel-preset-expo, @babel/core |
 
 **Run commands:**
@@ -43,217 +47,319 @@ npx expo start --clear  # start with cache cleared (use after package changes)
 
 ```
 noor-app/
-├── App.js                          ← Root. NavigationContainer + Tab.Navigator (3 tabs)
-├── app.json                        ← Expo config (no icon/splash — stripped to avoid missing asset errors)
-├── package.json                    ← SDK 54 locked dependencies
-├── babel.config.js                 ← babel-preset-expo
-├── CONTEXT.md                      ← This file
-├── assets/                         ← icon.png, splash.png, adaptive-icon.png (green placeholder PNGs)
+├── App.js                              ← Root. ThemeProvider + SafeAreaProvider + Root/AppContent
+├── app.json                            ← Expo config (icon, splash, EAS project ID, runtime version)
+├── eas.json                            ← EAS build profiles (development / preview / production)
+├── package.json                        ← SDK 54 locked dependencies
+├── babel.config.js                     ← babel-preset-expo
+├── CONTEXT.md                          ← This file
+├── assets/                             ← icon.png, splash.png, adaptive-icon.png
+├── android/                            ← Ejected native Android project
+│   └── app/src/main/
+│       ├── java/com/noor/dawah/
+│       │   └── MainActivity.kt         ← Sets AppTheme before super.onCreate for splash fix
+│       └── res/values/
+│           ├── colors.xml              ← Brand colors incl. splashBackground
+│           └── styles.xml              ← AppTheme / BootTheme / Theme.App.SplashScreen
+├── ios/                                ← Ejected native iOS project
+│   └── NoorIslamicDawah/
 └── src/
+    ├── context/
+    │   └── ThemeContext.js             ← Dark/light mode context, AsyncStorage persistence
     ├── screens/
-    │   ├── HomeScreen.js           ← Main card deck screen
-    │   ├── SavedScreen.js          ← Bookmarked cards (reads AsyncStorage)
-    │   └── SettingsScreen.js       ← About, stats, how-to, disclaimer
+    │   ├── HomeScreen.js               ← Main card deck with category filter + theme toggle
+    │   ├── SavedScreen.js              ← Bookmarked cards (My Collection)
+    │   └── SettingsScreen.js           ← About tab: stats, how-to, disclaimer
     ├── components/
-    │   ├── SwipeCard.js            ← Individual card with PanResponder swipe gestures
-    │   └── CategoryBar.js          ← Horizontal scrollable category filter
+    │   ├── SwipeCard.js                ← Card with vertical PanResponder, save, share, modal
+    │   ├── CategoryBar.js              ← Horizontal scrollable category filter chips
+    │   └── SplashAnimation.js          ← JS-driven animated splash overlay (new)
     ├── data/
-    │   └── content.js              ← All 35+ Islamic card objects + CATEGORIES array
-    ├── utils/
-    │   └── storage.js              ← AsyncStorage helpers
-    └── theme.js                    ← All design tokens (colors, spacing, radius, shadow, helpers)
+    │   └── content.js                  ← All 222 Islamic card objects + CATEGORIES array
+    └── utils/
+        └── storage.js                  ← AsyncStorage helpers (save / unsave / getSaved)
 ```
 
 ---
 
 ## App.js — Root
 
-Sets up `Tab.Navigator` with 3 screens:
-- **Home** — emoji 🏠, label "Discover"
-- **Saved** — emoji 🤍, label "Saved"
-- **Settings** — emoji ☪️, label "About"
+```
+App (SafeAreaProvider + ThemeProvider)
+└── Root (waits for theme mode, then hides native splash, shows JS splash)
+    └── AppContent (NavigationContainer + Tab.Navigator)
+        ├── Home  🏠 "Discover"
+        ├── Saved 🤍 "Saved"
+        └── About ☪️ "About"
+```
 
-Tab bar: white background, 85px height on iOS / 65px on Android, no native labels (custom `TabIcon` component renders emoji + text).
+**Root component flow:**
+1. Waits for `mode` from `ThemeContext` to resolve (reads AsyncStorage)
+2. Sets `appReady = true` and immediately calls `SplashScreen.hideAsync()`
+3. While not ready: renders a plain `#0D5016` green View (matches native splash)
+4. Once ready: renders `AppContent` with `SplashAnimation` overlaid on top
+5. `SplashAnimation` calls `onFinish()` when its fade-out completes → overlay removed
+
+Tab bar is theme-aware: background, border color, active/inactive tint all read from `colors`.
+
+---
+
+## ThemeContext.js — Dark Mode
+
+**File:** `src/context/ThemeContext.js`
+
+- Uses `useColorScheme()` for system preference, persists user choice to AsyncStorage key `'noor_theme'`
+- Returns `null` for `mode` until resolved (prevents flash)
+- Context value: `{ colors, isDark, toggleTheme, mode }`
+
+**Light mode color tokens:**
+
+| Token | Value |
+|---|---|
+| primary | `#0D5016` (deep Islamic green) |
+| gold | `#C9A84C` |
+| bg | `#F6F4EE` (warm parchment) |
+| bgCard | `#FFFFFF` |
+| textDark | `#1A1A1A` |
+| textMid | `#555555` |
+| textLight | `#888888` |
+| border | `#E8E4DA` |
+| tabBar | `#FFFFFF` |
+| tabActive | `#0D5016` |
+| tabInactive | `#999999` |
+
+**Dark mode color tokens:**
+
+| Token | Value |
+|---|---|
+| primary | `#4CAF7D` |
+| gold | `#D4A853` |
+| bg | `#121612` |
+| bgCard | `#1E241E` |
+| textDark | `#EDE8DC` |
+| textMid | `#A89F8C` |
+| textLight | `#6B6560` |
+| border | `#2A302A` |
+| tabBar | `#1E241E` |
+| tabActive | `#4CAF7D` |
+| tabInactive | `#6B6560` |
+
+**Category colors (both modes):**
+
+| Category | Light primary | Light bg | Dark primary | Dark bg |
+|---|---|---|---|---|
+| Ayah | `#1B5E20` | `#E8F5E9` | `#4CAF7D` | `#1A2E1E` |
+| Hadith | `#1A237E` | `#E8EAF6` | `#7986CB` | `#1A1D2E` |
+| Story | `#4A148C` | `#F3E5F5` | `#CE93D8` | `#1E1A2E` |
+| Dua | `#B71C1C` | `#FFEBEE` | `#EF9A9A` | `#2E1A1A` |
+
+---
+
+## SplashAnimation.js — JS Splash
+
+**File:** `src/components/SplashAnimation.js`
+
+Animated overlay rendered on top of `AppContent` after the native splash hides.
+
+**Sequence:**
+1. 200ms pause
+2. Arabic "نور" fades + springs in (700ms + spring)
+3. "Islamic Dawah" subtitle fades in (500ms)
+4. 800ms hold
+5. Full screen fades out (400ms) → `onFinish()` called
+
+**Styling:** `position: absolute`, full screen, `zIndex: 9999`, green `#0D5016` background, gold Arabic text (80px), uppercase gold subtitle (18px, 4px letter-spacing).
 
 ---
 
 ## HomeScreen.js
 
 **State:**
-- `selectedCategory` — `'All'` | `'Ayah'` | `'Hadith'` | `'Story'` | `'Dua'`
+- `selectedCategory` — `'All'` | `'Story'` | `'Ayah'` | `'Dua'` | `'Hadith'`
 - `deck` — shuffled array of card objects for current category
 - `index` — current card index
-- `cardKey` — incremented to force SwipeCard remount on navigation
-- `toastMsg` + `toastAnim` — fade toast notifications
+- `cardKey` — incremented to force SwipeCard remount
+- `toastMsg` + `toastAnim` — fade toast
+
+**Header:** Arabic "نور" + "Noor · Islamic Dawah" on left | theme toggle (☀️/🌙) + refresh (↺) on right
 
 **Logic:**
-- On category change → filter content → shuffle → reset index to 0
-- `goNext()` → increment index (capped at deck.length - 1), shows toast at last card
-- `goPrev()` → decrement index (capped at 0), shows toast at first card
-- `handleRestart()` → reshuffle current category, reset to 0, show "🔄 Cards reshuffled" toast
-
-**UI:**
-- Header: Arabic "نور" + "Noor · Islamic Dawah" + refresh button (↺)
-- CategoryBar below header
-- Progress bar + "X / Y" counter
-- Card area (SwipeCard or empty state)
-- Prev / Next button row at bottom
-- Toast overlay (position: absolute, bottom: 110)
-
-**Current swipe model:** Swipe LEFT = next card, swipe RIGHT = previous card. No save/skip — every card matters.
+- Category change → filter content → shuffle → reset index to 0
+- `goNext()` / `goPrev()` → increment / decrement index with boundary toasts
+- `handleRestart()` → reshuffle, reset to 0, show toast
+- `openingFromSaved`: When navigating from SavedScreen via `route.params.openCard`, places the target card at index 0, shuffles the rest behind it, sets `instant=true` on SwipeCard to skip the entry animation
 
 ---
 
 ## SwipeCard.js
 
-**Props:** `card`, `onNext`, `onPrev`
+**Props:** `card`, `onNext`, `onPrev`, `showHints`, `instant`, `onMounted`
 
-**Gesture:** `PanResponder` — horizontal drag only (dx > dy threshold). Swipe left → `flyOut('left')` → calls `onNext()`. Swipe right → `flyOut('right')` → calls `onPrev()`. Under threshold → `snapBack()`.
-
-**Animations:**
-- `position` (Animated.ValueXY) — card translate X/Y
-- `rotate` — interpolated from position.x: `[-6deg, 0deg, 6deg]`
-- `fadeAnim` — fade in on mount (200ms)
+**Gesture:** Vertical `PanResponder` (ignores horizontal). 60px threshold. Up → `onNext()`, Down → `onPrev()`. Snap-back under threshold. Blocked when "Read More" modal is open.
 
 **Card layout (top to bottom):**
-1. Header row: category chip (emoji + name + tag) | share button (↗)
-2. Arabic text box (left border in category color) — only if `card.arabic` is not null
-3. Translation (bold, 17px)
+1. Colored header band: category chip (emoji + name + watermark symbol) + share button
+2. Arabic text (right-aligned, gold-brown) — shown for Ayah / Hadith / Dua
+3. Translation text (bold, 17px)
 4. Thin colored divider
-5. Explanation (14.5px, up to 6 lines, "Read more ↓" toggle if >160 chars)
-6. Footer: source icon + source text
-7. Swipe hints row below card: "← Previous" and "Next →"
+5. Explanation (8-line truncate; "Read more" link if >450 chars opens fullscreen modal)
+6. Footer: source icon + source text + heart (save) button
 
-**Share:** Native `Share.share()` — formats Arabic + translation + explanation + source + "📲 via Noor App"
+**Watermark symbols by category:** Ayah=✦, Hadith=☽, Story=✺, Dua=❋
+
+**Save/Heart:** Spring animation on press (1.4× scale), haptic feedback, persisted via `saveCard()` / `unsaveCard()`.
+
+**Modal:** Full-screen ScrollView for long explanations. Backdrop press closes it.
 
 ---
 
-## theme.js — Design Tokens
+## SavedScreen.js
+
+**Header:** "My Collection" + dynamic subtitle ("X cards saved")
+
+**Empty state:** 🤲 emoji + instructions
+
+**Card list:** FlatList, 30px separator, each card shows:
+- Category chip + tag | Share (↗) + Remove (✕) buttons
+- Arabic text, translation, explanation (3-line truncate)
+- Source footer
+
+**Actions:**
+- Remove: Confirmation alert → `unsaveCard()` → local state update
+- Share: Native Share sheet with formatted card text
+- Card press: Navigates to Home tab with `openCard` param → HomeScreen re-arranges deck
+
+**Data:** `useFocusEffect` reloads from AsyncStorage on every tab focus.
+
+---
+
+## CategoryBar.js
+
+Horizontal `ScrollView` of filter chips. Reads `CATEGORIES` from `content.js`.
+
+- **Active chip:** Category color background + white text + shadow
+- **Inactive chip:** Gray border + mid-tone text
+- "All" chip uses `colors.primary` green + ☪️
+
+---
+
+## content.js — Data
 
 ```js
-colors = {
-  primary:     '#0D5016',   // Deep Islamic green
-  gold:        '#C9A84C',
-  bg:          '#F6F4EE',   // Warm parchment background
-  bgCard:      '#FFFFFF',
-  textDark:    '#1A1A1A',
-  textMid:     '#555555',
-  textLight:   '#888888',
-  arabic:      '#8B6914',   // Golden brown for Arabic text
-  // Category colors
-  ayah:        '#1B5E20',   ayahLight:   '#E8F5E9',
-  hadith:      '#1A237E',   hadithLight: '#E8EAF6',
-  story:       '#4A148C',   storyLight:  '#F3E5F5',
-  dua:         '#B71C1C',   duaLight:    '#FFEBEE',
-  // Swipe
-  swipeRight:  '#27AE60',
-  swipeLeft:   '#E74C3C',
-  // Tab bar
-  tabBar:      '#FFFFFF',
-  tabActive:   '#0D5016',
-  tabInactive: '#999999',
-}
-
-spacing = { xs:4, sm:8, md:16, lg:24, xl:32, xxl:48 }
-radius  = { sm:8, md:16, lg:24, pill:100 }
-shadow.card = { shadowOpacity:0.12, shadowRadius:12, elevation:6 }
-shadow.soft = { shadowOpacity:0.08, shadowRadius:6,  elevation:3 }
+export const CATEGORIES = ['All', 'Story', 'Ayah', 'Dua', 'Hadith'];
 ```
 
-**Helper functions:**
-- `getCategoryColor(category)` → primary hex
-- `getCategoryLightColor(category)` → light background hex
-- `getCategoryEmoji(category)` → `'📖' | '🌙' | '✨' | '🤲'`
+**Total: 222 cards**
 
----
+| Category | Count |
+|---|---|
+| Ayah | 95 |
+| Hadith | 73 |
+| Dua | 34 |
+| Story | 20 |
 
-## content.js — Data Model
-
+**Card schema:**
 ```js
-export const CATEGORIES = ['All', 'Ayah', 'Hadith', 'Story', 'Dua'];
-
-// Each card:
 {
-  id:          'ayah_1',            // unique string
-  category:    'Ayah',             // 'Ayah' | 'Hadith' | 'Story' | 'Dua'
-  arabic:      'بِسْمِ اللَّهِ…', // Arabic text, or null for Stories
-  translation: '"English translation in quotes."',
-  explanation: 'Up to ~60 word explanation with context.',
+  id:          'ayah_1',
+  category:    'Ayah',           // 'Ayah' | 'Hadith' | 'Story' | 'Dua'
+  arabic:      '…',              // Arabic string, or null for Stories
+  translation: '"English text"',
+  explanation: '~40–60 words.',
   source:      'Surah Al-Fatihah • 1:1',
-  sourceType:  'Quran',            // 'Quran' | 'Hadith' | 'Story' | 'Dua'
-  tag:         'Bismillah',        // Short contextual label
+  sourceType:  'Quran',          // 'Quran' | 'Hadith' | 'Story' | 'Dua'
+  tag:         'Bismillah',      // short label (optional)
 }
 ```
 
-**Current card count: 35+ cards**
-- 10 Ayahs (Quranic verses with Arabic)
-- 10 Hadiths (with Arabic)
-- 7 Stories (arabic: null, translation is the story title)
-- 8 Duas (with Arabic)
-
-**Story cards** use `translation` as the story title/headline instead of a quoted verse.
-**Source icon logic** in SwipeCard: Quran=📖, Hadith=📜, Dua=🤲, Story=✨
+Source icons in SwipeCard: Quran=📖, Hadith=📜, Dua=🤲, Story=✨
 
 ---
 
-## storage.js — AsyncStorage API
+## storage.js
 
 ```js
-getSavedCards()          // returns array of saved card objects
-saveCard(card)           // adds card to saved list
-unsaveCard(cardId)       // removes card by id
-isCardSaved(cardId)      // returns boolean
+getSavedCards()       // returns array of saved card objects
+saveCard(card)        // appends card to saved list
+unsaveCard(cardId)    // removes card by id
+isCardSaved(cardId)   // returns boolean
 ```
 
-Storage key: `'noor_saved_cards'` (assumed — check file if editing).
+AsyncStorage key: `'noor_saved_cards'`
 
 ---
 
-## package.json (final locked versions)
-
-```json
-{
-  "dependencies": {
-    "@expo/vector-icons": "^15.0.3",
-    "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-navigation/bottom-tabs": "^6.6.1",
-    "@react-navigation/native": "^6.1.18",
-    "expo": "~54.0.0",
-    "expo-haptics": "~15.0.8",
-    "expo-linear-gradient": "~15.0.8",
-    "expo-status-bar": "~3.0.9",
-    "react": "19.1.0",
-    "react-native": "0.81.5",
-    "react-native-safe-area-context": "~5.6.0",
-    "react-native-screens": "~4.16.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "babel-preset-expo": "^55.0.17"
-  }
-}
-```
-
----
-
-## app.json (current — no icon/splash to avoid missing asset errors)
+## app.json (current)
 
 ```json
 {
   "expo": {
-    "name": "Noor - Islamic Dawah",
+    "name": "Noor",
     "slug": "noor-dawah",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "assetBundlePatterns": ["**/*"],
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#121612"
+    },
     "ios": { "supportsTablet": false, "bundleIdentifier": "com.noor.dawah" },
-    "android": { "package": "com.noor.dawah" }
+    "android": {
+      "package": "com.noor.dawah",
+      "versionCode": 2,
+      "userInterfaceStyle": "automatic",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D5016"
+      }
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#121612",
+      "barStyle": "light-content",
+      "translucent": false
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": { "url": "https://u.expo.dev/0a625db5-899f-4e73-94bc-f9ab626cd232" },
+    "extra": { "eas": { "projectId": "0a625db5-899f-4e73-94bc-f9ab626cd232" } }
   }
 }
 ```
 
-> Note: `icon` and `splash` fields were removed because the asset files were missing and caused Metro to crash. Placeholder PNGs now exist in `assets/` — they can be added back if needed.
+---
+
+## EAS Build Setup (eas.json)
+
+| Profile | Platform | Distribution | Output |
+|---|---|---|---|
+| development | iOS + Android | internal | dev client |
+| preview | Android | internal | APK |
+| production | iOS + Android | store | IPA + AAB |
+
+Production auto-increments build numbers on both platforms. Submit config has placeholder values (Apple ID, service account) — not yet wired up for automated store submission.
+
+**OTA updates** are configured via `expo-updates` + `runtimeVersion: "1.0.0"`. Run `eas update` to push JS-only updates without a full rebuild.
+
+---
+
+## Android Native Files
+
+**`android/app/src/main/res/values/colors.xml`**
+```xml
+<color name="colorPrimary">#0D5016</color>
+<color name="colorPrimaryDark">#121612</color>
+<color name="colorAccent">#C9A84C</color>
+<color name="splashBackground">#121612</color>
+<color name="iconBackground">#0D5016</color>
+```
+
+**`android/app/src/main/res/values/styles.xml`**
+- `AppTheme`: Sets `windowBackground`, `statusBarColor`, `navigationBarColor`, and `windowSplashScreenBackground` all to `@color/splashBackground` — prevents white flash when theme switches in `onCreate`
+- `BootTheme` (extends `AppTheme`): Overrides `windowBackground` with `@drawable/ic_launcher_background`
+- `Theme.App.SplashScreen` (extends `BootTheme`): Applied to `MainActivity` in AndroidManifest
+
+**`MainActivity.kt`:** Calls `setTheme(R.style.AppTheme)` before `super.onCreate(null)` — required by `expo-splash-screen` to colour the background, status bar, and navigation bar correctly.
 
 ---
 
@@ -263,23 +369,9 @@ Storage key: `'noor_saved_cards'` (assumed — check file if editing).
 |---|---|
 | `EMFILE: too many open files` on `expo start` | Installed Watchman via `brew install watchman` |
 | SDK 51 vs Expo Go SDK 54 mismatch | Updated all packages to SDK 54 via `npx expo install --fix` |
-| `react@18.3.2` doesn't exist on npm | Corrected to `18.3.1`, then `npx expo install --fix` bumped to `19.1.0` |
-| Missing `icon.png`, `splash.png` in assets/ | Generated green placeholder PNGs via Python script |
-| `babel-preset-expo` missing | Installed as devDependency |
-| Port 8081 conflict from stale background process | `lsof -ti:8081 \| xargs kill -9` |
-
----
-
-## Future Feature Ideas
-
-- Daily push notifications (`expo-notifications`)
-- Dark mode toggle
-- Arabic language UI
-- Audio recitation for Ayahs and Duas
-- Live CMS / API content sync (replace bundled content)
-- Reading streak tracker
-- Prayer time integration (expo-location)
-- Saving cards (AsyncStorage already has the util — just needs UI wired up in current version)
+| Missing `icon.png` / `splash.png` | Generated placeholder PNGs; assets now present |
+| Android splash screen white flicker | Fixed via `AppTheme.windowBackground = splashBackground` in styles.xml |
+| iOS build non-interactive credential failure | Must run `eas build --platform ios` interactively to validate distribution cert |
 
 ---
 
@@ -289,25 +381,27 @@ Open `src/data/content.js` and add an object to the `content` array:
 
 ```js
 {
-  id: 'ayah_11',           // must be unique
+  id: 'ayah_96',           // must be unique across all cards
   category: 'Ayah',
   arabic: 'Arabic text here',
   translation: '"English translation in quotes."',
-  explanation: 'Explanation in ~40-60 words. Keep it grounded and practical.',
+  explanation: 'Explanation in ~40–60 words.',
   source: 'Surah X • Y:Z',
   sourceType: 'Quran',
   tag: 'ShortTag',
 }
 ```
 
-For Stories, set `arabic: null` and use `translation` as the story headline.
+For Stories: set `arabic: null`; `translation` is used as the story headline.
 
 ---
 
 ## Developer Notes
 
-- The project uses **no backend, no auth, no API calls** — fully client-side
+- **No backend, no auth, no API calls** — fully client-side
 - `useFocusEffect` in SavedScreen re-fetches from AsyncStorage on every tab focus
-- SwipeCard is remounted (not just re-rendered) on each card change via `key={cardKey-cardId}`
-- `useNativeDriver: false` is required on position animations because they drive layout (translateX/Y affect card position)
+- SwipeCard is **remounted** (not re-rendered) on each card change via `key={cardKey-cardId}` — this resets all internal animation state cleanly
+- `useNativeDriver: true` is used on all Animated values in SwipeCard and SplashAnimation (opacity, scale, translate) — layout-affecting properties would require `false`
+- After any native file change (styles.xml, colors.xml, AndroidManifest, MainActivity), a full EAS rebuild is required — `npx expo start` will not pick up native changes
 - Watchman is installed at `/opt/homebrew/bin/watchman` — Metro uses it automatically
+- `expo-updates` is configured but OTA pushes haven't been used yet; `eas update` will push to devices on `runtimeVersion: "1.0.0"`
