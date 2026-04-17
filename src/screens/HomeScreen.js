@@ -135,6 +135,8 @@ export default function HomeScreen({ navigation, route }) {
     showToast('🔄 Cards reshuffled');
   }, [selectedCategory]);
 
+  const handleCardMounted = useCallback(() => setOpeningFromSaved(false), []);
+
   const currentCard = deck[index];
   const total       = deck.length;
   const current     = index + 1;
@@ -182,7 +184,7 @@ export default function HomeScreen({ navigation, route }) {
               onPrev={goPrev}
               showHints={showHints}
               instant={openingFromSaved}
-              onMounted={() => setOpeningFromSaved(false)}
+              onMounted={handleCardMounted}
             />
           </View>
         ) : (

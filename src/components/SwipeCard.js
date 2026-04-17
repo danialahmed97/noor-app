@@ -21,7 +21,7 @@ const WATERMARK       = { Ayah: '✦', Hadith: '☽', Story: '✺', Dua: '❋' }
 export default function SwipeCard({ card, onNext, onPrev, showHints, instant, onMounted }) {
   const { colors } = useTheme();
   const position  = useRef(new Animated.ValueXY()).current;
-  const fadeAnim  = useRef(new Animated.Value(0)).current;
+  const fadeAnim  = useRef(new Animated.Value(instant ? 1 : 0)).current;
   const heartAnim = useRef(new Animated.Value(1)).current;
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
