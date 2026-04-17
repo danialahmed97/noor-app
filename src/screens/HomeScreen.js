@@ -24,13 +24,14 @@ export default function HomeScreen({ navigation, route }) {
   const { width, height: windowHeight } = useWindowDimensions();
   const { colors, isDark, toggleTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [deck,    setDeck]    = useState([]);
+  const [deck,    setDeck]    = useState(() => shuffleArray(content));
   const [index,   setIndex]   = useState(0);
   const [cardKey, setCardKey] = useState(0);
   const [showHints, setShowHints] = useState(false);
   const toastAnim = useRef(new Animated.Value(0)).current;
   const [toastMsg, setToastMsg] = useState('');
   const [openingFromSaved, setOpeningFromSaved] = useState(false);
+  const isFirstRun = useRef(true);
 
   const styles = useMemo(() => StyleSheet.create({
     safe:           { flex: 1, backgroundColor: colors.bg, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 },
@@ -66,6 +67,10 @@ export default function HomeScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
     const filtered = selectedCategory === 'All'
       ? content
       : content.filter((c) => c.category === selectedCategory);
