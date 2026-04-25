@@ -7,7 +7,9 @@
       "Bash(python3 -c \"import json; d=json.load\\(open\\('app.json'\\)\\); print\\(json.dumps\\({'name': d['expo'].get\\('name'\\), 'ios.bundleIdentifier': d['expo'].get\\('ios',{}\\).get\\('bundleIdentifier'\\), 'android.package': d['expo'].get\\('android',{}\\).get\\('package'\\)}, indent=2\\)\\)\")",
       "Bash(git commit -m ' *)",
       "Bash(git ls-remote *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('app.json'\\)\\); e=d['expo']; print\\('name:', e.get\\('name'\\)\\); print\\('slug:', e.get\\('slug'\\)\\); print\\('ios bundle:', e.get\\('ios',{}\\).get\\('bundleIdentifier'\\)\\); print\\('android pkg:', e.get\\('android',{}\\).get\\('package'\\)\\); print\\('version:', e.get\\('version'\\)\\); print\\('runtimeVersion:', e.get\\('runtimeVersion'\\)\\)\")",
+      "Bash(xxd \"/Users/danialahmedbarbhuiya/My Companies/noor-app/assets/adi-registration.properties\")"
     ]
   }
 }
