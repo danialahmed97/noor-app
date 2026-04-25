@@ -1,4 +1,4 @@
-package com.noor.dawah
+package com.noor.islamic.dawah
 
 import android.os.Build
 import android.os.Bundle
