@@ -5,7 +5,9 @@
       "Bash(npx eas-cli *)",
       "Bash(python3 -c \"import json; d=json.load\\(open\\('app.json'\\)\\); e=d['expo']; print\\('name:', e.get\\('name'\\)\\); print\\('slug:', e.get\\('slug'\\)\\)\")",
       "Bash(python3 -c \"import json; d=json.load\\(open\\('app.json'\\)\\); print\\(json.dumps\\({'name': d['expo'].get\\('name'\\), 'ios.bundleIdentifier': d['expo'].get\\('ios',{}\\).get\\('bundleIdentifier'\\), 'android.package': d['expo'].get\\('android',{}\\).get\\('package'\\)}, indent=2\\)\\)\")",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git ls-remote *)",
+      "Bash(git checkout *)"
     ]
   }
 }
