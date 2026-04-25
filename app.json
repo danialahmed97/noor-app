@@ -13,7 +13,8 @@
       "**/*"
     ],
     "plugins": [
-      "expo-system-ui"
+      "expo-system-ui",
+      "./plugins/withAdiToken"
     ],
     "ios": {
       "supportsTablet": false,
