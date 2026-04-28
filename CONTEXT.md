@@ -9,7 +9,7 @@
 **Noor** is a React Native / Expo mobile app for iOS and Android. It delivers curated Islamic content (Quranic verses, hadiths, stories, duas) in a swipeable card interface — inspired by Inshorts. No backend. Fully offline. Content is bundled in the app.
 
 **Project path:** `/Users/danialahmedbarbhuiya/My Companies/noor-app/`
-**Bundle ID:** `com.noor.dawah` (iOS + Android)
+**Bundle ID:** `com.noor.islamic.dawah` (iOS + Android)
 **EAS Project ID:** `0a625db5-899f-4e73-94bc-f9ab626cd232`
 **GitHub:** `https://github.com/danialahmed97/noor-app`
 
@@ -322,9 +322,9 @@ AsyncStorage key: `'noor_saved_cards'`
       "resizeMode": "contain",
       "backgroundColor": "#121612"
     },
-    "ios": { "supportsTablet": false, "bundleIdentifier": "com.noor.dawah" },
+    "ios": { "supportsTablet": false, "bundleIdentifier": "com.noor.islamic.dawah" },
     "android": {
-      "package": "com.noor.dawah",
+      "package": "com.noor.islamic.dawah",
       "versionCode": 2,
       "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
