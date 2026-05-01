@@ -4,3 +4,14 @@ node_modules/
 *.zip
 dist/
 web-build/
+
+# Signing keys — NEVER commit
+*.jks
+*.keystore
+upload_certificate.pem
+
+# Build artifacts
+build-*.aab
+build-*.apk
+*.aab
+*.apk
