@@ -23,6 +23,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const position  = useRef(new Animated.ValueXY()).current;
   const fadeAnim  = useRef(new Animated.Value(instant ? 1 : 0)).current;
   const heartAnim = useRef(new Animated.Value(1)).current;
+  const translitAnim = useRef(new Animated.Value(showTransliteration ? 32 : 0)).current;
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
   const needsReadMore = card.explanation.length > 450;
@@ -69,10 +70,13 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     chipTagLight:  { fontSize: scale(11), fontWeight: '500', color: 'rgba(255,255,255,0.8)' },
     shareBtn:      { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
     shareBtnText:  { fontSize: 15, color: '#FFFFFF', fontWeight: '600' },
-    translitBtn:     { width: 30, height: 30, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.2)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', justifyContent: 'center', alignItems: 'center' },
-    translitBtnText: { fontSize: scale(14), color: '#FFFFFF', fontWeight: '600' },
+    translitPill:        { width: 64, height: 28, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', flexDirection: 'row', overflow: 'hidden' },
+    translitSlider:      { position: 'absolute', width: 32, height: 28, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.95)', top: 0, left: 0 },
+    translitHalf:        { width: 32, height: 28, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
+    translitLabel:       { fontSize: scale(13), fontWeight: '600', color: '#FFFFFF' },
+    translitLabelActive: { fontSize: scale(13), fontWeight: '600', color: '#0D5016' },
     arabicText:    { fontSize: scale(22), lineHeight: scale(38), textAlign: 'right', writingDirection: 'rtl', fontWeight: '500', color: '#FFFFFF' },
-    translitText:  { fontSize: scale(18), lineHeight: scale(32), textAlign: 'center', fontWeight: '400', color: '#FFFFFF' },
+    translitText:  { fontSize: scale(14), lineHeight: scale(20), textAlign: 'center', fontWeight: '400', color: '#FFFFFF' },
     storyHeadline: { fontSize: scale(18), fontWeight: '700', color: '#FFFFFF', lineHeight: scale(26), marginTop: spacing.xs },
     body:          { padding: spacing.lg, overflow: 'hidden' },
     translation:   { fontSize: scale(17), lineHeight: scale(26), color: colors.textDark, fontWeight: '600', marginBottom: spacing.md },
@@ -107,6 +111,15 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
     isCardSaved(card.id).then(setSaved);
   }, [card.id]);
+
+  useEffect(() => {
+    Animated.spring(translitAnim, {
+      toValue: showTransliteration ? 32 : 0,
+      tension: 200,
+      friction: 20,
+      useNativeDriver: true,
+    }).start();
+  }, [showTransliteration]);
 
   useEffect(() => {
     if (!expanded) return;
@@ -213,8 +226,14 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
                 {showTranslitBtn && (
-                  <TouchableOpacity style={styles.translitBtn} onPress={handleTranslitPress} activeOpacity={0.7}>
-                    <Text style={styles.translitBtnText}>{showTransliteration ? 'A' : 'ع'}</Text>
+                  <TouchableOpacity style={styles.translitPill} onPress={handleTranslitPress} activeOpacity={0.9}>
+                    <Animated.View style={[styles.translitSlider, { transform: [{ translateX: translitAnim }] }]} />
+                    <View style={styles.translitHalf}>
+                      <Text style={!showTransliteration ? styles.translitLabelActive : styles.translitLabel}>ع</Text>
+                    </View>
+                    <View style={styles.translitHalf}>
+                      <Text style={showTransliteration ? styles.translitLabelActive : styles.translitLabel}>A</Text>
+                    </View>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
@@ -302,8 +321,14 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
                 {showTranslitBtn && (
-                  <TouchableOpacity style={styles.translitBtn} onPress={handleTranslitPress} activeOpacity={0.7}>
-                    <Text style={styles.translitBtnText}>{showTransliteration ? 'A' : 'ع'}</Text>
+                  <TouchableOpacity style={styles.translitPill} onPress={handleTranslitPress} activeOpacity={0.9}>
+                    <Animated.View style={[styles.translitSlider, { transform: [{ translateX: translitAnim }] }]} />
+                    <View style={styles.translitHalf}>
+                      <Text style={!showTransliteration ? styles.translitLabelActive : styles.translitLabel}>ع</Text>
+                    </View>
+                    <View style={styles.translitHalf}>
+                      <Text style={showTransliteration ? styles.translitLabelActive : styles.translitLabel}>A</Text>
+                    </View>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
