@@ -104,13 +104,15 @@ Tab bar is theme-aware: background, border color, active/inactive tint all read 
 
 ---
 
-## ThemeContext.js — Dark Mode
+## ThemeContext.js — Dark Mode + Transliteration
 
 **File:** `src/context/ThemeContext.js`
 
 - Uses `useColorScheme()` for system preference, persists user choice to AsyncStorage key `'noor_theme'`
-- Returns `null` for `mode` until resolved (prevents flash)
-- Context value: `{ colors, isDark, toggleTheme, mode }`
+- Returns `null` for `mode` until resolved (prevents flash); both `noor_theme` and `noor_show_transliteration` are loaded together via `Promise.all` before the first render
+- Context value: `{ colors, isDark, toggleTheme, mode, showTransliteration, toggleTransliteration }`
+- `showTransliteration` (boolean, default `false`): global preference for showing Arabic script vs Latin transliteration
+- `toggleTransliteration()`: flips `showTransliteration`, persists to AsyncStorage key `'noor_show_transliteration'`
 
 **Light mode color tokens:**
 
@@ -200,12 +202,24 @@ Animated overlay rendered on top of `AppContent` after the native splash hides.
 **Gesture:** Vertical `PanResponder` (ignores horizontal). 60px threshold. Up → `onNext()`, Down → `onPrev()`. Snap-back under threshold. Blocked when "Read More" modal is open.
 
 **Card layout (top to bottom):**
-1. Colored header band: category chip (emoji + name + watermark symbol) + share button
-2. Arabic text (right-aligned, white #FFFFFF) — shown inside the colored header band for Ayah / Hadith / Dua
+1. Colored header band: category chip (emoji + name + watermark symbol) | [ع/A toggle button — only when `card.arabic` and `card.transliteration` are both non-empty] | share button
+2. Arabic text or transliteration — shown inside the colored header band for Ayah / Hadith / Dua. When `showTransliteration=true` and `card.transliteration` is non-empty, renders Latin transliteration (centered, ~18px, system font); otherwise renders Arabic (right-aligned RTL, 22px). Hadiths always show Arabic (their `transliteration` is null).
 3. Translation text (bold, 17px)
 4. Thin colored divider
 5. Explanation (8-line truncate; "Read more" link if >450 chars opens fullscreen modal)
 6. Footer: source icon + source text + heart (save) button
+
+**Transliteration toggle button:**
+- Label: `ع` when Arabic is showing (tap to switch to transliteration), `A` when transliteration is showing (tap to switch back)
+- Visible only when `card.arabic && card.transliteration` are both non-empty (Ayahs + Duas only in v1)
+- Tapping triggers `toggleTransliteration()` from ThemeContext + light haptic
+- Global state — toggling on one card applies to all cards immediately
+
+**Transliteration coverage (v1):**
+- Ayahs (95): ✅ have transliteration
+- Duas (34): ✅ have transliteration
+- Hadiths (73): ❌ null — deferred to v1.x pending scholarly review
+- Stories (20): ❌ null — no Arabic text, toggle never appears
 
 **Watermark symbols by category:** Ayah=✦, Hadith=☽, Story=✺, Dua=❋
 
@@ -237,9 +251,13 @@ Animated overlay rendered on top of `AppContent` after the native splash hides.
 
 ## SettingsScreen.js
 
-Hero section (Arabic "نور" + tagline), then three sections: CONTENT LIBRARY, HOW TO USE, DISCLAIMER, and a version footer.
+Hero section (Arabic "نور" + tagline), then four sections: CONTENT LIBRARY, DISPLAY, HOW TO USE, DISCLAIMER, and a version footer.
 
-**HOW TO USE steps (7 items):**
+**DISPLAY section:**
+- "Show transliteration" toggle row — Switch bound to `showTransliteration` / `toggleTransliteration` from ThemeContext
+- Subtitle: "Display Arabic in Latin letters"
+
+**HOW TO USE steps (8 items):**
 1. 👆 Swipe UP to move to the next card
 2. 👇 Swipe DOWN to go back to the previous card
 3. 🤍 Tap the heart in the card footer to save a card
@@ -247,6 +265,7 @@ Hero section (Arabic "نور" + tagline), then three sections: CONTENT LIBRARY, 
 5. ☪️ Use the category filter to focus on Ayahs, Hadiths, Stories, or Duas
 6. ↺ Tap the refresh icon to reshuffle the deck anytime
 7. ☀️ Tap the sun / moon icon to switch between light and dark mode
+8. ع Tap the ع button on any card to switch between Arabic and transliteration
 
 ---
 
@@ -278,14 +297,15 @@ export const CATEGORIES = ['All', 'Story', 'Ayah', 'Dua', 'Hadith'];
 **Card schema:**
 ```js
 {
-  id:          'ayah_1',
-  category:    'Ayah',           // 'Ayah' | 'Hadith' | 'Story' | 'Dua'
-  arabic:      '…',              // Arabic string, or null for Stories
-  translation: '"English text"',
-  explanation: '~40–60 words.',
-  source:      'Surah Al-Fatihah • 1:1',
-  sourceType:  'Quran',          // 'Quran' | 'Hadith' | 'Story' | 'Dua'
-  tag:         'Bismillah',      // short label (optional)
+  id:             'ayah_1',
+  category:       'Ayah',           // 'Ayah' | 'Hadith' | 'Story' | 'Dua'
+  arabic:         '…',              // Arabic string, or null for Stories
+  transliteration: '…',             // Latin transliteration string for Ayahs + Duas; null for Hadiths + Stories
+  translation:    '"English text"',
+  explanation:    '~40–60 words.',
+  source:         'Surah Al-Fatihah • 1:1',
+  sourceType:     'Quran',          // 'Quran' | 'Hadith' | 'Story' | 'Dua'
+  tag:            'Bismillah',      // short label (optional)
 }
 ```
 
