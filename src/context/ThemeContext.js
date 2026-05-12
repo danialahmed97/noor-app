@@ -48,16 +48,19 @@ export const darkColors = {
 export function ThemeProvider({ children }) {
   const systemScheme = useColorScheme();
   const [mode, setMode] = useState(null);
+  const [showTransliteration, setShowTransliteration] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem('noor_theme').then((saved) => {
-      if (saved === LIGHT || saved === DARK) {
-        // User has explicitly chosen — respect their choice
-        setMode(saved);
+    Promise.all([
+      AsyncStorage.getItem('noor_theme'),
+      AsyncStorage.getItem('noor_show_transliteration'),
+    ]).then(([savedTheme, savedTranslit]) => {
+      if (savedTheme === LIGHT || savedTheme === DARK) {
+        setMode(savedTheme);
       } else {
-        // No saved preference — follow system, fallback to dark
         setMode(systemScheme === LIGHT ? LIGHT : DARK);
       }
+      setShowTransliteration(savedTranslit === 'true');
     });
   }, []);
 
@@ -67,6 +70,12 @@ export function ThemeProvider({ children }) {
     await AsyncStorage.setItem('noor_theme', next);
   };
 
+  const toggleTransliteration = async () => {
+    const next = !showTransliteration;
+    setShowTransliteration(next);
+    await AsyncStorage.setItem('noor_show_transliteration', String(next));
+  };
+
   // Don't render children until mode is resolved — prevents flash
   if (mode === null) return null;
 
@@ -74,7 +83,7 @@ export function ThemeProvider({ children }) {
   const isDark  = mode === DARK;
 
   return (
-    <ThemeContext.Provider value={{ colors, isDark, toggleTheme, mode }}>
+    <ThemeContext.Provider value={{ colors, isDark, toggleTheme, mode, showTransliteration, toggleTransliteration }}>
       {children}
     </ThemeContext.Provider>
   );

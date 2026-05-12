@@ -19,7 +19,7 @@ const SWIPE_DURATION  = 220;
 const WATERMARK       = { Ayah: '✦', Hadith: '☽', Story: '✺', Dua: '❋' };
 
 export default function SwipeCard({ card, onNext, onPrev, showHints, instant, onMounted }) {
-  const { colors } = useTheme();
+  const { colors, showTransliteration, toggleTransliteration } = useTheme();
   const position  = useRef(new Animated.ValueXY()).current;
   const fadeAnim  = useRef(new Animated.Value(instant ? 1 : 0)).current;
   const heartAnim = useRef(new Animated.Value(1)).current;
@@ -33,7 +33,8 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const catColor      = getCategoryColor(card.category, colors);
   const catLightColor = getCategoryLightColor(card.category, colors);
   const catEmoji      = getCategoryEmoji(card.category);
-  const isStory       = card.category === 'Story';
+  const isStory        = card.category === 'Story';
+  const showTranslitBtn = !!(card.arabic && card.transliteration);
 
   const styles = useMemo(() => StyleSheet.create({
     wrapper: { width: CARD_MAX_WIDTH, alignSelf: 'center' },
@@ -68,7 +69,10 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     chipTagLight:  { fontSize: scale(11), fontWeight: '500', color: 'rgba(255,255,255,0.8)' },
     shareBtn:      { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
     shareBtnText:  { fontSize: 15, color: '#FFFFFF', fontWeight: '600' },
+    translitBtn:     { width: 30, height: 30, borderRadius: 15, backgroundColor: 'rgba(255,255,255,0.2)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', justifyContent: 'center', alignItems: 'center' },
+    translitBtnText: { fontSize: scale(14), color: '#FFFFFF', fontWeight: '600' },
     arabicText:    { fontSize: scale(22), lineHeight: scale(38), textAlign: 'right', writingDirection: 'rtl', fontWeight: '500', color: '#FFFFFF' },
+    translitText:  { fontSize: scale(18), lineHeight: scale(32), textAlign: 'center', fontWeight: '400', color: '#FFFFFF' },
     storyHeadline: { fontSize: scale(18), fontWeight: '700', color: '#FFFFFF', lineHeight: scale(26), marginTop: spacing.xs },
     body:          { padding: spacing.lg, overflow: 'hidden' },
     translation:   { fontSize: scale(17), lineHeight: scale(26), color: colors.textDark, fontWeight: '600', marginBottom: spacing.md },
@@ -179,6 +183,11 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     }).start();
   };
 
+  const handleTranslitPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    toggleTransliteration();
+  };
+
   const handleShare = async () => {
     const arabicLine = card.arabic ? `${card.arabic}\n\n` : '';
     const text = `${arabicLine}${card.translation}\n\n${card.explanation}\n\n— ${card.source}\n\n📲 via Noor App`;
@@ -202,12 +211,21 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 <Text style={styles.chipTextLight}>{card.category}</Text>
                 {card.tag && <Text style={styles.chipTagLight}> · {card.tag}</Text>}
               </View>
-              <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
-                <Text style={styles.shareBtnText}>↗</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                {showTranslitBtn && (
+                  <TouchableOpacity style={styles.translitBtn} onPress={handleTranslitPress} activeOpacity={0.7}>
+                    <Text style={styles.translitBtnText}>{showTransliteration ? 'A' : 'ع'}</Text>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
+                  <Text style={styles.shareBtnText}>↗</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             {card.arabic && (
-              <Text style={styles.arabicText}>{card.arabic}</Text>
+              <Text style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}>
+                {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
+              </Text>
             )}
             {isStory && (
               <Text style={styles.storyHeadline}>{card.translation}</Text>
@@ -282,23 +300,32 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 <Text style={styles.chipTextLight}>{card.category}</Text>
                 {card.tag && <Text style={styles.chipTagLight}> · {card.tag}</Text>}
               </View>
-              <TouchableOpacity
-                onPress={() => { expandedRef.current = false; setExpanded(false); }}
-                activeOpacity={0.8}
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  backgroundColor: 'rgba(255,255,255,0.2)',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700' }}>✕</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                {showTranslitBtn && (
+                  <TouchableOpacity style={styles.translitBtn} onPress={handleTranslitPress} activeOpacity={0.7}>
+                    <Text style={styles.translitBtnText}>{showTransliteration ? 'A' : 'ع'}</Text>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity
+                  onPress={() => { expandedRef.current = false; setExpanded(false); }}
+                  activeOpacity={0.8}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700' }}>✕</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             {card.arabic && (
-              <Text style={styles.arabicText}>{card.arabic}</Text>
+              <Text style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}>
+                {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
+              </Text>
             )}
             {isStory && (
               <Text style={styles.storyHeadline}>{card.translation}</Text>

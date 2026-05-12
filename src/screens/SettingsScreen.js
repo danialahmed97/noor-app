@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  SafeAreaView, TouchableOpacity,
+  SafeAreaView, Switch,
   Platform, StatusBar,
 } from 'react-native';
 import { spacing, radius, shadow, scale } from '../theme';
@@ -30,10 +30,11 @@ const HOW_TO_USE = [
   { icon: '☪️', text: 'Use the category filter to focus on Ayahs, Hadiths, Stories, or Duas' },
   { icon: '↺',  text: 'Tap the refresh icon to reshuffle the deck anytime' },
   { icon: '☀️', text: 'Tap the sun / moon icon to switch between light and dark mode' },
+  { icon: 'ع',  text: 'Tap the ع button on any card to switch between Arabic and transliteration.' },
 ];
 
 export default function SettingsScreen() {
-  const { colors } = useTheme();
+  const { colors, showTransliteration, toggleTransliteration } = useTheme();
 
   const categoryColors = {
     Ayah:   colors.ayah,
@@ -127,6 +128,17 @@ export default function SettingsScreen() {
     howIcon: { fontSize: scale(18), width: 28, textAlign: 'center' },
     howText: { fontSize: scale(14), color: colors.textMid, flex: 1, lineHeight: scale(21) },
 
+    // ── Display toggles ──
+    toggleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+      gap: spacing.md,
+    },
+    toggleLabel: { fontSize: scale(14), color: colors.textDark, fontWeight: '600' },
+    toggleSub:   { fontSize: scale(12), color: colors.textLight, marginTop: 2 },
+
     // ── Disclaimer ──
     disclaimerCard: {
       marginHorizontal: spacing.lg,
@@ -175,6 +187,23 @@ export default function SettingsScreen() {
               <Text style={styles.statLabel}>{cat}s</Text>
             </View>
           ))}
+        </View>
+
+        {/* ── Display ── */}
+        <Text style={styles.sectionLabel}>DISPLAY</Text>
+        <View style={styles.howCard}>
+          <View style={styles.toggleRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.toggleLabel}>Show transliteration</Text>
+              <Text style={styles.toggleSub}>Display Arabic in Latin letters</Text>
+            </View>
+            <Switch
+              value={showTransliteration}
+              onValueChange={toggleTransliteration}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
         </View>
 
         {/* ── How to use ── */}
