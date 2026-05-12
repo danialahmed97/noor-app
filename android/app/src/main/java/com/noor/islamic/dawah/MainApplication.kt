@@ -15,6 +15,7 @@ import com.facebook.react.defaults.DefaultReactNativeHost
 
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
+import expo.modules.updates.UpdatesController
 
 class MainApplication : Application(), ReactApplication {
 
@@ -32,6 +33,14 @@ class MainApplication : Application(), ReactApplication {
           override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
 
           override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+
+          override fun getJSBundleFile(): String? {
+            return UpdatesController.instance.launchAssetFile
+          }
+
+          override fun getBundleAssetName(): String? {
+            return UpdatesController.instance.bundleAssetName
+          }
       }
   )
 
@@ -40,6 +49,7 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    UpdatesController.initialize(this)
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
     } catch (e: IllegalArgumentException) {
