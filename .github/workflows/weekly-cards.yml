@@ -1,0 +1,33 @@
+name: Weekly Card Generation
+
+on:
+  schedule:
+    - cron: '30 22 * * 5'  # Friday 22:30 UTC = Saturday 04:00 IST
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Generate cards
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          node scripts/generate-cards.js > pr-body.md
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: auto/weekly-cards-${{ github.run_id }}
+          title: '🌙 Weekly cards — auto-generated batch'
+          body-path: pr-body.md
+          commit-message: 'chore: weekly auto-generated content batch'
+          labels: auto-generated, content-review
+          base: main
