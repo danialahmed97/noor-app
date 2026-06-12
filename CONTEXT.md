@@ -442,3 +442,58 @@ For Stories: set `arabic: null`; `translation` is used as the story headline.
 - After any native file change (styles.xml, colors.xml, AndroidManifest, MainActivity), a full EAS rebuild is required — `npx expo start` will not pick up native changes
 - Watchman is installed at `/opt/homebrew/bin/watchman` — Metro uses it automatically
 - `expo-updates` is configured but OTA pushes haven't been used yet; `eas update` will push to devices on `runtimeVersion: "1.0.0"`
+
+---
+
+## Weekly Content Pipeline
+
+Autonomous pipeline that proposes a new batch of content cards every week, gated by human review before anything reaches users.
+
+**Schedule:** Every Saturday at 04:00 IST (Friday 22:30 UTC).
+
+**Flow:**
+
+```
+Saturday 04:00 IST
+  │
+  ▼
+weekly-cards.yml (GitHub Action)
+  │  1. Calls Anthropic API to pick a theme (or uses state/topics.json → overrideTheme)
+  │  2. Calls Anthropic API to generate 15 candidate cards for that theme
+  │  3. Validates cards against the schema (scripts/validate-schema.js)
+  │  4. Appends valid cards to src/data/content.js, updates state/topics.json
+  ▼
+Opens a PR to main (label: auto-generated, content-review)
+  │
+  ▼
+Human review
+  │  - Spot-check Arabic, transliteration, translations, sources
+  │  - Verify no fabricated Hadith citations
+  ▼
+Merge to main
+  │
+  ▼
+deploy-update.yml (GitHub Action, triggered by push to main touching src/data/content.js)
+  │  Runs `eas update --branch main`
+  ▼
+Users receive the new cards via OTA update
+```
+
+**Where the pieces live:**
+
+- `scripts/generate-cards.js` — main generation script (theme selection, API call, validation, file writes, PR description)
+- `scripts/validate-schema.js` — standalone schema validator (`validateCard`, `validateBatch`)
+- `state/topics.json` — tracks `lastTheme`, `lastGeneratedAt`, `themeHistory`, `batchCount`, and `overrideTheme`
+- `.github/workflows/weekly-cards.yml` — scheduled generation + PR creation
+- `.github/workflows/deploy-update.yml` — OTA publish on merge to main
+
+**Required GitHub Secrets:**
+
+- `ANTHROPIC_API_KEY` — used by `weekly-cards.yml` to call the Anthropic API
+- `EAS_TOKEN` — used by `deploy-update.yml` to authenticate `eas update`
+
+**Overriding the theme:** Edit `state/topics.json`, set `"overrideTheme": "your theme"`, commit to `main`. The next Saturday run will use that theme verbatim (with reasoning `"Manual override..."`) instead of asking Claude to pick one, and will clear `overrideTheme` back to `null` afterwards.
+
+**Disabling temporarily:** Comment out the `schedule:` block in `.github/workflows/weekly-cards.yml`. `workflow_dispatch` still allows manual runs.
+
+**Running manually:** GitHub → Actions tab → "Weekly Card Generation" → Run workflow.
