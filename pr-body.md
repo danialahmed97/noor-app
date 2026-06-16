@@ -1,29 +1,30 @@
-## 🌙 Weekly card batch #1
+## 🌙 Weekly card batch #2
 
-**Theme:** Stories of the Prophets: Yusuf (AS)
+**Theme:** The Companions of the Prophet
 
-**Reasoning:** Story category is significantly underrepresented with only 20 cards compared to 95 Ayah and 73 Hadith. The story of Prophet Yusuf (AS) is rich with lessons on patience, trust in Allah, forgiveness, and divine wisdom. This theme naturally spans all four categories: Ayahs from Surah Yusuf, Hadiths about his character, narrative Story cards depicting key moments, and Duas related to his supplications. It provides cohesive, engaging content while helping balance the category distribution.
+**Reasoning:** Story category is significantly under-represented (28 cards vs 98 Ayah). This theme naturally lends itself to Story cards while also supporting Hadith cards about the Companions' actions and sayings. It avoids the recent 'Stories of the Prophets: Yusuf (AS)' theme while providing rich narrative content about the Sahabah that can inspire and educate users through their examples of faith, sacrifice, and devotion.
 
 **Stats:**
-- Total cards added: 14
-- Cards dropped (failed validation): 1
-- By category: Story: 8, Ayah: 3, Dua: 3
+- Total cards added: 15
+- Cards dropped (failed validation): 0
+- By category: Story: 7, Ayah: 3, Hadith: 1, Dua: 4
 
 **Card IDs added:**
-- story_yusuf_dream
-- story_yusuf_brothers_jealousy
-- story_yusuf_well
-- story_yusuf_sold_slave
-- ayah_12_18
-- story_yusuf_temptation
-- ayah_12_23
-- dua_yusuf_prison
-- story_yusuf_prison_wisdom
-- story_yusuf_minister
-- story_yusuf_forgiveness
-- dua_yusuf_gratitude
-- dua_yusuf_death
-- ayah_12_111
+- story_abu_bakr_cave
+- story_umar_justice
+- story_bilal_adhan
+- story_uthman_well_rumah
+- story_ali_sword
+- story_aisha_knowledge
+- story_sad_mother
+- ayah_9_40
+- ayah_33_23
+- ayah_48_29
+- hadith_companions_stars
+- dua_companions_1
+- dua_righteous_company
+- dua_following_sunnah
+- dua_good_end
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
