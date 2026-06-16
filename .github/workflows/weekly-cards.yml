@@ -31,3 +31,5 @@ jobs:
           commit-message: 'chore: weekly auto-generated content batch'
           labels: auto-generated, content-review
           base: main
+          reviewers: danialahmed97
+          assignees: danialahmed97
