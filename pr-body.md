@@ -1,30 +1,29 @@
-## 🌙 Weekly card batch #2
+## 🌙 Weekly card batch #3
 
-**Theme:** The Companions of the Prophet
+**Theme:** Seeking Forgiveness and Repentance
 
-**Reasoning:** Story category is significantly under-represented (28 cards vs 98 Ayah). This theme naturally lends itself to Story cards while also supporting Hadith cards about the Companions' actions and sayings. It avoids the recent 'Stories of the Prophets: Yusuf (AS)' theme while providing rich narrative content about the Sahabah that can inspire and educate users through their examples of faith, sacrifice, and devotion.
+**Reasoning:** This theme naturally supports Story content (tales of repentance from the Prophets and Companions), which is the most under-represented category at only 35 cards. It also accommodates Dua cards (supplications for forgiveness), Hadith cards (teachings on tawbah), and Ayah cards (verses about Allah's mercy and forgiveness). The theme avoids the recent Prophet-specific and Companion-focused themes while addressing a universal spiritual need that resonates across all experience levels.
 
 **Stats:**
-- Total cards added: 15
-- Cards dropped (failed validation): 0
-- By category: Story: 7, Ayah: 3, Hadith: 1, Dua: 4
+- Total cards added: 14
+- Cards dropped (failed validation): 1
+- By category: Story: 6, Dua: 4, Ayah: 3, Hadith: 1
 
 **Card IDs added:**
-- story_abu_bakr_cave
-- story_umar_justice
-- story_bilal_adhan
-- story_uthman_well_rumah
-- story_ali_sword
-- story_aisha_knowledge
-- story_sad_mother
-- ayah_9_40
-- ayah_33_23
-- ayah_48_29
-- hadith_companions_stars
-- dua_companions_1
-- dua_righteous_company
-- dua_following_sunnah
-- dua_good_end
+- story_adam_tawbah
+- dua_seeking_forgiveness_1
+- story_man_99_murders
+- ayah_25_70
+- dua_forgiveness_comprehensive
+- story_kaab_ibn_malik
+- ayah_11_90
+- dua_tawbah_night
+- story_wahshi_repentance
+- hadith_repentance_daily
+- story_barsisa_worshipper
+- ayah_4_110
+- dua_before_sleep_forgiveness
+- story_thabit_regret_laughter
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
