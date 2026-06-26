@@ -31,9 +31,17 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const arabicLines = Math.ceil((card.arabic?.length || 0) / 28);
   const translationLines = Math.ceil((card.translation?.length || 0) / 38);
   const projectedLines = arabicLines + translationLines;
-  const hasLongHeader = isAyahOrDua && projectedLines > 6;
-  const showReadMore = isAyahOrDua ? (hasLongHeader && !expanded) : (needsReadMore && !expanded);
-  const explanationLines = isAyahOrDua ? (hasLongHeader ? 4 : undefined) : 8;
+  let explanationLines;
+  if (isAyahOrDua) {
+    if (projectedLines <= 6) {
+      explanationLines = undefined;
+    } else {
+      explanationLines = Math.max(2, 4 - Math.floor((projectedLines - 6) / 2));
+    }
+  } else {
+    explanationLines = 8;
+  }
+  const showReadMore = isAyahOrDua ? (projectedLines > 6 && !expanded) : (needsReadMore && !expanded);
   const insets      = useSafeAreaInsets();
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
