@@ -27,6 +27,13 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
   const needsReadMore = card.explanation.length > 450;
+  const isAyahOrDua = card.category === 'Ayah' || card.category === 'Dua';
+  const arabicLines = Math.ceil((card.arabic?.length || 0) / 28);
+  const translationLines = Math.ceil((card.translation?.length || 0) / 38);
+  const projectedLines = arabicLines + translationLines;
+  const hasLongHeader = isAyahOrDua && projectedLines > 6;
+  const showReadMore = isAyahOrDua ? (hasLongHeader && !expanded) : (needsReadMore && !expanded);
+  const explanationLines = isAyahOrDua ? (hasLongHeader ? 4 : undefined) : 8;
   const insets      = useSafeAreaInsets();
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
@@ -257,11 +264,11 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
             <View style={[styles.divider, { backgroundColor: catLightColor }]} />
             <Text
               style={styles.explanation}
-              numberOfLines={8}
+              numberOfLines={explanationLines}
             >
               {card.explanation}
             </Text>
-            {needsReadMore && !expanded && (
+            {showReadMore && (
               <TouchableOpacity
                 onPress={() => { expandedRef.current = true; setExpanded(true); }}
                 activeOpacity={0.7}
