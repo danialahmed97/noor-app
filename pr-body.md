@@ -1,29 +1,30 @@
-## 🌙 Weekly card batch #3
+## 🌙 Weekly card batch #4
 
-**Theme:** Seeking Forgiveness and Repentance
+**Theme:** Patience in Hardship
 
-**Reasoning:** This theme naturally supports Story content (tales of repentance from the Prophets and Companions), which is the most under-represented category at only 35 cards. It also accommodates Dua cards (supplications for forgiveness), Hadith cards (teachings on tawbah), and Ayah cards (verses about Allah's mercy and forgiveness). The theme avoids the recent Prophet-specific and Companion-focused themes while addressing a universal spiritual need that resonates across all experience levels.
+**Reasoning:** This theme allows for balanced growth across all categories: Ayahs about sabr (e.g., 2:153, 39:10), Hadiths on enduring trials, Stories of prophets like Ayyub (AS) or early Muslims facing persecution, and Duas for strength during difficulties. Story category is most under-represented (41 cards) and this theme provides rich narrative opportunities while avoiding recent prophet-focused and companion-focused themes.
 
 **Stats:**
-- Total cards added: 14
-- Cards dropped (failed validation): 1
-- By category: Story: 6, Dua: 4, Ayah: 3, Hadith: 1
+- Total cards added: 15
+- Cards dropped (failed validation): 0
+- By category: Story: 6, Ayah: 4, Dua: 4, Hadith: 1
 
 **Card IDs added:**
-- story_adam_tawbah
-- dua_seeking_forgiveness_1
-- story_man_99_murders
-- ayah_25_70
-- dua_forgiveness_comprehensive
-- story_kaab_ibn_malik
-- ayah_11_90
-- dua_tawbah_night
-- story_wahshi_repentance
-- hadith_repentance_daily
-- story_barsisa_worshipper
-- ayah_4_110
-- dua_before_sleep_forgiveness
-- story_thabit_regret_laughter
+- story_prophet_ayyub_patience
+- story_luqman_advice_son
+- ayah_2_155
+- dua_hardship_1
+- story_companions_trench
+- ayah_39_10
+- dua_distress_2
+- story_umm_sulaim_patience
+- ayah_3_200
+- story_prophet_nuh_950_years
+- dua_patience_1
+- hadith_patience_reward
+- story_yaqub_patience_yusuf
+- ayah_94_5_6
+- dua_yaqub_patience
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
