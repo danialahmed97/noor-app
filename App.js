@@ -11,6 +11,7 @@ import SavedScreen from './src/screens/SavedScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { Text } from 'react-native';
 import SplashAnimation from './src/components/SplashAnimation';
+import { registerForPushNotifications } from './src/utils/registerPush';
 
 // Keep splash screen visible until we are ready
 SplashScreen.preventAutoHideAsync();
@@ -115,6 +116,10 @@ function Root() {
 }
 
 export default function App() {
+  useEffect(() => {
+    registerForPushNotifications();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>
