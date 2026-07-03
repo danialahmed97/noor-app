@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
 const REGISTER_URL = 'https://noor-api.gymfund.in/register';
 
@@ -12,17 +13,22 @@ export async function registerForPushNotifications() {
       finalStatus = status;
     }
 
+    console.log('[push] permission status:', finalStatus);
+
     if (finalStatus !== 'granted') return;
 
-    const { data: token } = await Notifications.getExpoPushTokenAsync();
+    const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? '0a625db5-899f-4e73-94bc-f9ab626cd232';
+    const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
+    console.log('[push] token:', token);
     if (!token) return;
 
-    await fetch(REGISTER_URL, {
+    const response = await fetch(REGISTER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     });
+    console.log('[push] register response status:', response.status);
   } catch (err) {
-    // Never let push registration crash or block the app.
+    console.warn('[push] registration failed:', err);
   }
 }
