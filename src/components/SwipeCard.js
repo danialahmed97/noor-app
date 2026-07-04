@@ -26,22 +26,35 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const translitAnim = useRef(new Animated.Value(showTransliteration ? 32 : 0)).current;
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
-  const needsReadMore = card.explanation.length > 450;
   const isAyahOrDua = card.category === 'Ayah' || card.category === 'Dua';
   const arabicLines = Math.ceil((card.arabic?.length || 0) / 28);
   const translationLines = Math.ceil((card.translation?.length || 0) / 38);
   const projectedLines = arabicLines + translationLines;
+  const estimatedExplanationLines = Math.ceil((card.explanation?.length || 0) / 52);
+
+  // Overflow hierarchy (applies to Ayah, Dua, and Hadith):
+  // 1. Arabic alone >= 10 lines → truncate arabic to 8 lines, Read more in header
+  // 2. Arabic + translation >= 10 lines → truncate translation to 8 lines, Read more in body
+  // 3. Otherwise → truncate explanation per formula, Read more after explanation
+
+  const truncateArabic = arabicLines >= 10;
+  const truncateTranslation = !truncateArabic && projectedLines >= 10;
+
   let explanationLines;
-  if (isAyahOrDua) {
-    if (projectedLines <= 6) {
-      explanationLines = undefined;
-    } else {
-      explanationLines = Math.max(2, 4 - Math.floor((projectedLines - 6) / 2));
-    }
+  if (truncateArabic || truncateTranslation) {
+    explanationLines = 0; // explanation hidden entirely when arabic or translation is truncated
   } else {
-    explanationLines = 8;
+    const maxExplanationLines = projectedLines > 8
+      ? 1
+      : Math.max(4, 7 - Math.floor(projectedLines / 2));
+    explanationLines = estimatedExplanationLines > maxExplanationLines ? maxExplanationLines : undefined;
   }
-  const showReadMore = isAyahOrDua ? (projectedLines > 6 && !expanded) : (needsReadMore && !expanded);
+
+  const showReadMore = truncateArabic
+    ? (!expanded)
+    : truncateTranslation
+    ? (!expanded)
+    : (explanationLines !== undefined && !expanded);
   const insets      = useSafeAreaInsets();
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
@@ -257,9 +270,23 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               </View>
             </View>
             {card.arabic && (
-              <Text style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}>
-                {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
-              </Text>
+              <>
+                <Text
+                  style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}
+                  numberOfLines={truncateArabic && !showTransliteration && !expanded ? 8 : undefined}
+                >
+                  {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
+                </Text>
+                {truncateArabic && !showTransliteration && !expanded && (
+                  <TouchableOpacity
+                    onPress={() => { expandedRef.current = true; setExpanded(true); }}
+                    activeOpacity={0.7}
+                    style={{ marginTop: 4 }}
+                  >
+                    <Text style={[styles.readMore, { color: '#FFFFFF' }]}>Read more ↓</Text>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
             {isStory && (
               <Text style={styles.storyHeadline}>{card.translation}</Text>
@@ -268,15 +295,18 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
           {/* ── Card body ── */}
           <View style={styles.body}>
-            {!isStory && <Text style={styles.translation}>{card.translation}</Text>}
-            <View style={[styles.divider, { backgroundColor: catLightColor }]} />
-            <Text
-              style={styles.explanation}
-              numberOfLines={explanationLines}
-            >
-              {card.explanation}
-            </Text>
-            {showReadMore && (
+            {/* Translation — hidden if arabic itself is truncated */}
+            {!isStory && !truncateArabic && (
+              <Text
+                style={styles.translation}
+                numberOfLines={truncateTranslation && !expanded ? 8 : undefined}
+              >
+                {card.translation}
+              </Text>
+            )}
+
+            {/* Read more on translation */}
+            {!isStory && truncateTranslation && !expanded && (
               <TouchableOpacity
                 onPress={() => { expandedRef.current = true; setExpanded(true); }}
                 activeOpacity={0.7}
@@ -285,6 +315,28 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 <Text style={[styles.readMore, { color: catColor }]}>Read more ↓</Text>
               </TouchableOpacity>
             )}
+
+            {/* Divider + explanation — only when neither arabic nor translation is truncated */}
+            {!truncateArabic && !truncateTranslation && card.explanation ? (
+              <>
+                <View style={[styles.divider, { backgroundColor: catLightColor }]} />
+                <Text
+                  style={styles.explanation}
+                  numberOfLines={explanationLines}
+                >
+                  {card.explanation}
+                </Text>
+                {showReadMore && !expanded && (
+                  <TouchableOpacity
+                    onPress={() => { expandedRef.current = true; setExpanded(true); }}
+                    activeOpacity={0.7}
+                    style={{ marginTop: spacing.sm }}
+                  >
+                    <Text style={[styles.readMore, { color: catColor }]}>Read more ↓</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            ) : null}
 
             <View style={[styles.footer, { borderTopColor: catLightColor }]}>
               <Text style={styles.sourceIcon}>
