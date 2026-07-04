@@ -63,6 +63,40 @@ Requires an Apple Developer account with access to this app's bundle ID (`com.no
 
 ---
 
+## Installing / uninstalling the APK on an Android phone
+
+Once you have an APK in `noor-extra/` (from `npm run build:apk`), use `adb` (Android Debug Bridge, installed with Android Studio, or standalone via `brew install android-platform-tools`) to get it onto a device.
+
+### 1. Connect the phone
+- Enable **Developer options**: Settings → About phone → tap "Build number" 7 times
+- Inside Developer options, turn on **USB debugging**
+- Plug the phone in via USB and accept the "Allow USB debugging?" prompt on the phone
+
+Confirm the phone is visible:
+```bash
+adb devices
+```
+You should see your device listed as `device` (not `unauthorized` — if it says that, re-check the on-phone prompt).
+
+### 2. Install the APK
+```bash
+cd noor-extra
+adb install noor-universal.apk
+```
+- If the app is already installed and you just want to update it (keeping its data): `adb install -r noor-universal.apk`
+- If you get `INSTALL_FAILED_UPDATE_INCOMPATIBLE` (usually a signature mismatch from a different keystore), uninstall the old copy first, then install fresh.
+
+### 3. Uninstall the app
+```bash
+adb uninstall com.noor.islamic.dawah
+```
+That's the app's package name from `app.json` (`android.package`) — same on every build, so this command doesn't change between versions.
+
+### No cable handy? Skip adb entirely
+Airdrop/transfer the `.apk` to the phone directly, open it from Files, and allow "install from this source" when prompted. Slower to iterate with, but works with no USB/adb setup at all.
+
+---
+
 ## Where do build files go?
 
 Every build lands in **`noor-extra/`** at the project root — a folder that's gitignored on purpose (see the note in `.gitignore`). It's where local-only artifacts (builds, signing keys, logs) live so they never get pushed to GitHub and never clutter the code you're working in. You can delete old files from there anytime; nothing in the app depends on them.
