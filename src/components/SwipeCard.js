@@ -191,7 +191,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     footer:        { flexDirection: 'row', alignItems: 'center', marginTop: spacing.md, paddingTop: spacing.sm, borderTopWidth: 1, gap: spacing.xs },
     sourceIcon:    { fontSize: scale(12) },
     sourceText:    { fontSize: scale(12), color: colors.textLight, fontWeight: '500', flex: 1 },
-    heart:         { fontSize: scale(20) },
+    heart:         { fontSize: scale(20), minWidth: scale(24) },
     hints:         { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: spacing.md, marginTop: spacing.sm },
     hintText:      { fontSize: scale(11), color: colors.textLight, fontWeight: '500' },
   }), [colors]);
