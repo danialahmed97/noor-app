@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
   View, Text, StyleSheet, Animated, PanResponder,
-  Dimensions, Share, TouchableOpacity, ScrollView, Modal, BackHandler, Platform,
+  Dimensions, Share, TouchableOpacity, ScrollView, Modal, BackHandler, Platform, StatusBar,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -26,43 +26,103 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const translitAnim = useRef(new Animated.Value(showTransliteration ? 32 : 0)).current;
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
-  const isAyahOrDua = card.category === 'Ayah' || card.category === 'Dua';
-  const arabicLines = Math.ceil((card.arabic?.length || 0) / 28);
-  const translationLines = Math.ceil((card.translation?.length || 0) / 38);
-  const projectedLines = arabicLines + translationLines;
-  const estimatedExplanationLines = Math.ceil((card.explanation?.length || 0) / 52);
+  const insets      = useSafeAreaInsets();
 
-  // Overflow hierarchy (applies to Ayah, Dua, and Hadith):
-  // 1. Arabic alone >= 10 lines → truncate arabic to 8 lines, Read more in header
-  // 2. Arabic + translation >= 10 lines → truncate translation to 8 lines, Read more in body
-  // 3. Otherwise → truncate explanation per formula, Read more after explanation
+  // ── Height-aware overflow logic ──
+  // All values are synchronous — no async measurement, no race conditions.
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const isStoryCard = card.category === 'Story';
 
-  const truncateArabic = arabicLines >= 10;
-  const truncateTranslation = !truncateArabic && projectedLines >= 10;
+  // 1. Chars per line — scales with card width
+  const cardWidth = Math.min(screenWidth - 32, 560) - (spacing.lg * 2); // CARD_MAX_WIDTH minus horizontal padding
+  const arabicCharWidth = scale(22) * 0.48;   // arabic font scale(22), avg char ~48% of fontSize
+  const englishCharWidth = scale(17) * 0.50;  // translation font scale(17), avg char ~50% of fontSize
+  const explanationCharWidth = scale(14.5) * 0.50; // explanation font scale(14.5)
 
+  const arabicCharsPerLine = Math.max(1, Math.floor(cardWidth / arabicCharWidth));
+  const translationCharsPerLine = Math.max(1, Math.floor(cardWidth / englishCharWidth));
+  const explanationCharsPerLine = Math.max(1, Math.floor(cardWidth / explanationCharWidth));
+
+  const arabicLines = Math.ceil((card.arabic?.length || 0) / arabicCharsPerLine);
+  const translationLines = Math.ceil((card.translation?.length || 0) / translationCharsPerLine);
+  const estimatedExplanationLines = Math.ceil((card.explanation?.length || 0) / explanationCharsPerLine);
+
+  // 2. Line heights in dp
+  const arabicLineHeight = scale(38);
+  const translationLineHeight = scale(26);
+  const explanationLineHeight = scale(23);
+
+  // 3. Chrome height — everything that isn't card content
+  const statusBarHeight = Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : insets.top;
+  const chromeHeight =
+    statusBarHeight           // status bar
+    + 50                      // app header (نور + icons)
+    + 44                      // category tabs row
+    + 24                      // progress bar row
+    + spacing.md + spacing.lg // header band top+bottom padding
+    + 40                      // bandTop row (category chip + buttons)
+    + spacing.lg              // body padding top
+    + spacing.md              // body padding bottom (before footer)
+    + 1.5                     // divider
+    + spacing.md              // divider marginBottom
+    + 40                      // footer (source + heart)
+    + 60 + (insets.bottom || 8); // tab bar
+
+  // 4. Available height for content (arabic + translation + explanation)
+  const readMoreBuffer = Platform.OS === 'ios' ? 40 : 0;
+  const availableHeight = screenHeight - chromeHeight - readMoreBuffer;
+
+  // 5. How much height does each section consume?
+  const arabicHeight = arabicLines * arabicLineHeight;
+  const translationHeight = translationLines * translationLineHeight;
+  const explanationHeight = estimatedExplanationLines * explanationLineHeight;
+
+  // 6. Truncation hierarchy — show as much as the device allows
+  let truncateArabic = false;
+  let truncateTranslation = false;
   let explanationLines;
-  if (truncateArabic || truncateTranslation) {
-    explanationLines = 0; // explanation hidden entirely when arabic or translation is truncated
+  let maxArabicLines;
+  let maxTranslationLines;
+
+  if (isStoryCard) {
+    // Stories: unchanged — character-count based
+    explanationLines = 8;
+    truncateArabic = false;
+    truncateTranslation = false;
+  } else if (arabicHeight > availableHeight) {
+    // Case 1: Arabic alone exceeds screen — truncate arabic, hide translation + explanation
+    truncateArabic = true;
+    maxArabicLines = Math.max(2, Math.floor(availableHeight / arabicLineHeight) - 2); // leave room for Read more
+    explanationLines = 0;
+  } else if (arabicHeight + translationHeight > availableHeight) {
+    // Case 2: Arabic + translation exceeds screen — truncate translation, hide explanation
+    truncateTranslation = true;
+    const remainingForTranslation = availableHeight - arabicHeight;
+    maxTranslationLines = Math.max(2, Math.floor(remainingForTranslation / translationLineHeight) - 2);
+    explanationLines = 0;
   } else {
-    const maxExplanationLines = projectedLines > 8
-      ? 1
-      : Math.max(4, 7 - Math.floor(projectedLines / 2));
-    explanationLines = estimatedExplanationLines > maxExplanationLines ? maxExplanationLines : undefined;
+    // Case 3: Arabic + translation fit — budget the rest for explanation
+    const remainingForExplanation = availableHeight - arabicHeight - translationHeight;
+    const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
+    if (estimatedExplanationLines > maxExplanationLines) {
+      explanationLines = maxExplanationLines;
+    } else {
+      explanationLines = undefined; // fits fully, no truncation
+    }
   }
 
-  const showReadMore = truncateArabic
-    ? (!expanded)
-    : truncateTranslation
-    ? (!expanded)
-    : (explanationLines !== undefined && !expanded);
-  const insets      = useSafeAreaInsets();
+  const needsReadMore = card.explanation?.length > 450; // kept for Story compat
+  const showReadMore = isStoryCard
+    ? (needsReadMore && !expanded)
+    : (truncateArabic || truncateTranslation || (explanationLines !== undefined && explanationLines !== 0)) && !expanded;
+
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
 
   const catColor      = getCategoryColor(card.category, colors);
   const catLightColor = getCategoryLightColor(card.category, colors);
   const catEmoji      = getCategoryEmoji(card.category);
-  const isStory        = card.category === 'Story';
+  const isStory        = isStoryCard;
   const showTranslitBtn = !!(card.arabic && card.transliteration);
 
   const styles = useMemo(() => StyleSheet.create({
@@ -273,11 +333,11 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               <>
                 <Text
                   style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}
-                  numberOfLines={truncateArabic && !showTransliteration && !expanded ? 8 : undefined}
+                  numberOfLines={truncateArabic && !expanded ? maxArabicLines : undefined}
                 >
                   {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
                 </Text>
-                {truncateArabic && !showTransliteration && !expanded && (
+                {truncateArabic && !expanded && (
                   <TouchableOpacity
                     onPress={() => { expandedRef.current = true; setExpanded(true); }}
                     activeOpacity={0.7}
@@ -299,7 +359,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
             {!isStory && !truncateArabic && (
               <Text
                 style={styles.translation}
-                numberOfLines={truncateTranslation && !expanded ? 8 : undefined}
+                numberOfLines={truncateTranslation && !expanded ? maxTranslationLines : undefined}
               >
                 {card.translation}
               </Text>
