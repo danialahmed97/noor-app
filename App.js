@@ -19,9 +19,9 @@ const Tab = createBottomTabNavigator();
 
 function TabIcon({ emoji, label, focused, color }) {
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ alignItems: 'center', justifyContent: 'center', minWidth: 60 }}>
       <Text style={{ fontSize: 20 }}>{emoji}</Text>
-      <Text style={{ fontSize: 10, color, fontWeight: focused ? '700' : '500', marginTop: 2 }}>
+      <Text numberOfLines={1} style={{ fontSize: 10, color, fontWeight: focused ? '700' : '500', marginTop: 2 }}>
         {label}
       </Text>
     </View>

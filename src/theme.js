@@ -3,9 +3,15 @@ import { Dimensions } from 'react-native';
 const BASE_WIDTH = 375;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-export const scale        = (size) => (SCREEN_WIDTH / BASE_WIDTH) * size;
 export const isTablet     = SCREEN_WIDTH >= 768;
-export const CARD_MAX_WIDTH = isTablet ? 560 : SCREEN_WIDTH - 32;
+export const scale = (size) => {
+  const ratio = SCREEN_WIDTH / BASE_WIDTH;
+  const effectiveRatio = isTablet ? Math.min(ratio, 1.25) : ratio;
+  return effectiveRatio * size;
+};
+export const CARD_MAX_WIDTH = isTablet
+  ? SCREEN_WIDTH - 80
+  : SCREEN_WIDTH - 32;
 
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
 export const radius  = { sm: 8, md: 16, lg: 24, pill: 100 };

@@ -2,13 +2,14 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
   View, Text, StyleSheet, Animated, PanResponder,
   Dimensions, Share, TouchableOpacity, ScrollView, Modal, BackHandler, Platform, StatusBar,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import {
   spacing, radius, shadow,
   getCategoryColor, getCategoryLightColor, getCategoryEmoji,
-  scale, CARD_MAX_WIDTH,
+  scale, CARD_MAX_WIDTH, isTablet,
 } from '../theme';
 import { isCardSaved, saveCard, unsaveCard } from '../utils/storage';
 import { useTheme } from '../context/ThemeContext';
@@ -20,6 +21,7 @@ const WATERMARK       = { Ayah: '✦', Hadith: '☽', Story: '✺', Dua: '❋' }
 
 export default function SwipeCard({ card, onNext, onPrev, showHints, instant, onMounted }) {
   const { colors, showTransliteration, toggleTransliteration } = useTheme();
+  const { width: liveWidth, height: liveHeight } = useWindowDimensions();
   const position  = useRef(new Animated.ValueXY()).current;
   const fadeAnim  = useRef(new Animated.Value(instant ? 1 : 0)).current;
   const heartAnim = useRef(new Animated.Value(1)).current;
@@ -30,18 +32,20 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
   // ── Height-aware overflow logic ──
   // All values are synchronous — no async measurement, no race conditions.
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const screenWidth = liveWidth;
+  const screenHeight = liveHeight;
   const isStoryCard = card.category === 'Story';
 
   // 1. Chars per line — scales with card width
-  const cardWidth = Math.min(screenWidth - 32, 560) - (spacing.lg * 2); // CARD_MAX_WIDTH minus horizontal padding
+  const liveCardMaxWidth = isTablet ? screenWidth - 80 : screenWidth - 32;
+  const cardWidth = liveCardMaxWidth - (spacing.lg * 2);
   const arabicCharWidth = scale(22) * 0.48;   // arabic font scale(22), avg char ~48% of fontSize
   const englishCharWidth = scale(17) * 0.50;  // translation font scale(17), avg char ~50% of fontSize
   const explanationCharWidth = scale(14.5) * 0.50; // explanation font scale(14.5)
 
-  const arabicCharsPerLine = Math.max(1, Math.floor(cardWidth / arabicCharWidth));
-  const translationCharsPerLine = Math.max(1, Math.floor(cardWidth / englishCharWidth));
-  const explanationCharsPerLine = Math.max(1, Math.floor(cardWidth / explanationCharWidth));
+  const arabicCharsPerLine = Math.max(1, Math.floor(cardWidth / (isTablet ? arabicCharWidth * 0.85 : arabicCharWidth)));
+  const translationCharsPerLine = Math.max(1, Math.floor(cardWidth / (isTablet ? englishCharWidth * 0.85 : englishCharWidth)));
+  const explanationCharsPerLine = Math.max(1, Math.floor(cardWidth / (isTablet ? explanationCharWidth * 0.85 : explanationCharWidth)));
 
   const arabicLines = Math.ceil((card.arabic?.length || 0) / arabicCharsPerLine);
   const translationLines = Math.ceil((card.translation?.length || 0) / translationCharsPerLine);
@@ -69,7 +73,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     + 60 + (insets.bottom || 8); // tab bar
 
   // 4. Available height for content (arabic + translation + explanation)
-  const readMoreBuffer = Platform.OS === 'ios' ? 40 : 0;
+  const readMoreBuffer = Platform.OS === 'ios' ? (isTablet ? 80 : 40) : 0;
   const availableHeight = screenHeight - chromeHeight - readMoreBuffer;
 
   // 5. How much height does each section consume?
@@ -85,10 +89,21 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   let maxTranslationLines;
 
   if (isStoryCard) {
-    // Stories: unchanged — character-count based
-    explanationLines = 8;
     truncateArabic = false;
     truncateTranslation = false;
+    if (isTablet) {
+      // Tablet: use height-aware logic same as other categories
+      const remainingForExplanation = availableHeight - translationHeight;
+      const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
+      if (estimatedExplanationLines > maxExplanationLines) {
+        explanationLines = maxExplanationLines;
+      } else {
+        explanationLines = undefined;
+      }
+    } else {
+      // Phone: keep character-count based
+      explanationLines = 8;
+    }
   } else if (arabicHeight > availableHeight) {
     // Case 1: Arabic alone exceeds screen — truncate arabic, hide translation + explanation
     truncateArabic = true;
@@ -113,7 +128,9 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
   const needsReadMore = card.explanation?.length > 450; // kept for Story compat
   const showReadMore = isStoryCard
-    ? (needsReadMore && !expanded)
+    ? (isTablet
+        ? (explanationLines !== undefined && !expanded)
+        : (needsReadMore && !expanded))
     : (truncateArabic || truncateTranslation || (explanationLines !== undefined && explanationLines !== 0)) && !expanded;
 
   const swiping     = useRef(false);
@@ -297,7 +314,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
   return (
     <Animated.View
-      style={[styles.wrapper, { opacity: fadeAnim }]}
+      style={[styles.wrapper, { opacity: fadeAnim, width: isTablet ? screenWidth - 80 : CARD_MAX_WIDTH }]}
       {...panResponder.panHandlers}
     >
       <Animated.View style={[styles.cardShadow, { transform: [{ translateY: position.y }] }]}>
