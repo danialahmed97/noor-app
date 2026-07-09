@@ -49,7 +49,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
   const arabicLines = Math.ceil((card.arabic?.length || 0) / arabicCharsPerLine);
   const translationLines = Math.ceil((card.translation?.length || 0) / translationCharsPerLine);
-  const estimatedExplanationLines = Math.ceil((card.explanation?.length || 0) / explanationCharsPerLine);
+  const estimatedExplanationLines = Math.round((card.explanation?.length || 0) / explanationCharsPerLine);
 
   // 2. Line heights in dp
   const arabicLineHeight = scale(38);
@@ -127,11 +127,17 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   }
 
   const needsReadMore = card.explanation?.length > 450; // kept for Story compat
+
+  // Check if truncation actually removes content
+  const arabicActuallyTruncated = truncateArabic && arabicLines > maxArabicLines;
+  const translationActuallyTruncated = truncateTranslation && translationLines > maxTranslationLines;
+  const explanationActuallyTruncated = explanationLines !== undefined && explanationLines !== 0 && estimatedExplanationLines > explanationLines;
+
   const showReadMore = isStoryCard
     ? (isTablet
-        ? (explanationLines !== undefined && !expanded)
+        ? (explanationActuallyTruncated && !expanded)
         : (needsReadMore && !expanded))
-    : (truncateArabic || truncateTranslation || (explanationLines !== undefined && explanationLines !== 0)) && !expanded;
+    : (arabicActuallyTruncated || translationActuallyTruncated || explanationActuallyTruncated) && !expanded;
 
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
