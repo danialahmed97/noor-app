@@ -1,30 +1,28 @@
-## 🌙 Weekly card batch #6
+## 🌙 Weekly card batch #7
 
-**Theme:** The Prophets: Lessons from Musa (AS)
+**Theme:** The Believers' Character: Humility and Modesty
 
-**Reasoning:** This theme focuses on Prophet Musa's life and trials, which naturally supports Story content (currently tied-lowest at 53 cards) through narratives of his encounters with Pharaoh, the parting of the Red Sea, and Mount Sinai. It also enables Ayah cards from Surah Ta-Ha and Al-Qasas, Hadith cards about lessons from his story, and Dua cards inspired by Musa's supplications. The theme is distinct from recent topics, offers rich material across all categories, and provides practical spiritual lessons about reliance on Allah, courage in the face of tyranny, and responding to divine calling.
+**Reasoning:** This theme allows for balanced content creation across all categories while addressing the deficit in Dua (56) and Story (61) categories. Humility is richly covered in Quranic verses (Ayah), prophetic traditions (Hadith), contains inspiring stories of companions and prophets demonstrating modesty (Story), and has specific supplications for self-purification (Dua). The theme is practical, relatable to daily life, distinct from recent themes, and provides concrete examples of Islamic character-building that resonates with modern audiences seeking spiritual growth.
 
 **Stats:**
-- Total cards added: 15
-- Cards dropped (failed validation): 0
-- By category: Story: 8, Dua: 3, Ayah: 3, Hadith: 1
+- Total cards added: 13
+- Cards dropped (failed validation): 2
+- By category: Story: 7, Dua: 4, Hadith: 1, Ayah: 1
 
 **Card IDs added:**
-- story_musa_burning_bush
-- dua_musa_speech
-- story_musa_staff_serpent
-- ayah_20_39
-- story_musa_mother_river
-- dua_musa_helper
-- story_musa_vs_magicians
-- ayah_28_24
-- story_musa_kills_man
-- dua_musa_oppressors
-- story_musa_red_sea
-- ayah_26_62
-- story_musa_golden_calf
-- hadith_musa_adam
-- story_musa_khidr
+- story_prophet_walks_humbly
+- story_umar_night_patrol
+- dua_humility_1
+- story_abu_bakr_slave
+- dua_modesty_1
+- story_aishah_modesty
+- hadith_bukhari_6029
+- story_salman_persian_humble
+- dua_pride_refuge
+- story_prophet_mends_sandals
+- ayah_17_37
+- dua_after_praise
+- story_imam_malik_student
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
