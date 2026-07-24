@@ -1,14 +1,15 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
   View, Text, StyleSheet, Animated, PanResponder,
-  Dimensions, Share, TouchableOpacity, ScrollView, Modal, BackHandler, Platform,
+  Dimensions, Share, TouchableOpacity, ScrollView, Modal, BackHandler, Platform, StatusBar,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import {
   spacing, radius, shadow,
   getCategoryColor, getCategoryLightColor, getCategoryEmoji,
-  scale, CARD_MAX_WIDTH,
+  scale, CARD_MAX_WIDTH, isTablet,
 } from '../theme';
 import { isCardSaved, saveCard, unsaveCard } from '../utils/storage';
 import { useTheme } from '../context/ThemeContext';
@@ -20,36 +21,131 @@ const WATERMARK       = { Ayah: '✦', Hadith: '☽', Story: '✺', Dua: '❋' }
 
 export default function SwipeCard({ card, onNext, onPrev, showHints, instant, onMounted }) {
   const { colors, showTransliteration, toggleTransliteration } = useTheme();
+  const { width: liveWidth, height: liveHeight } = useWindowDimensions();
   const position  = useRef(new Animated.ValueXY()).current;
   const fadeAnim  = useRef(new Animated.Value(instant ? 1 : 0)).current;
   const heartAnim = useRef(new Animated.Value(1)).current;
   const translitAnim = useRef(new Animated.Value(showTransliteration ? 32 : 0)).current;
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
-  const needsReadMore = card.explanation.length > 450;
-  const isAyahOrDua = card.category === 'Ayah' || card.category === 'Dua';
-  const arabicLines = Math.ceil((card.arabic?.length || 0) / 28);
-  const translationLines = Math.ceil((card.translation?.length || 0) / 38);
-  const projectedLines = arabicLines + translationLines;
-  let explanationLines;
-  if (isAyahOrDua) {
-    if (projectedLines <= 6) {
-      explanationLines = undefined;
-    } else {
-      explanationLines = Math.max(2, 4 - Math.floor((projectedLines - 6) / 2));
-    }
-  } else {
-    explanationLines = 8;
-  }
-  const showReadMore = isAyahOrDua ? (projectedLines > 6 && !expanded) : (needsReadMore && !expanded);
   const insets      = useSafeAreaInsets();
+
+  // ── Height-aware overflow logic ──
+  // All values are synchronous — no async measurement, no race conditions.
+  const screenWidth = liveWidth;
+  const screenHeight = liveHeight;
+  const isStoryCard = card.category === 'Story';
+
+  // 1. Chars per line — scales with card width
+  const liveCardMaxWidth = isTablet ? screenWidth - 80 : screenWidth - 32;
+  const cardWidth = liveCardMaxWidth - (spacing.lg * 2);
+  const arabicCharWidth = scale(22) * 0.48;   // arabic font scale(22), avg char ~48% of fontSize
+  const englishCharWidth = scale(17) * 0.50;  // translation font scale(17), avg char ~50% of fontSize
+  const explanationCharWidth = scale(14.5) * 0.50; // explanation font scale(14.5)
+
+  const arabicCharsPerLine = Math.max(1, Math.floor(cardWidth / (isTablet ? arabicCharWidth * 0.85 : arabicCharWidth)));
+  const translationCharsPerLine = Math.max(1, Math.floor(cardWidth / (isTablet ? englishCharWidth * 0.85 : englishCharWidth)));
+  const explanationCharsPerLine = Math.max(1, Math.floor(cardWidth / (isTablet ? explanationCharWidth * 0.85 : explanationCharWidth)));
+
+  const arabicLines = Math.ceil((card.arabic?.length || 0) / arabicCharsPerLine);
+  const translationLines = Math.ceil((card.translation?.length || 0) / translationCharsPerLine);
+  const estimatedExplanationLines = Math.round((card.explanation?.length || 0) / explanationCharsPerLine);
+
+  // 2. Line heights in dp
+  const arabicLineHeight = scale(38);
+  const translationLineHeight = scale(26);
+  const explanationLineHeight = scale(23);
+
+  // 3. Chrome height — everything that isn't card content
+  const statusBarHeight = Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : insets.top;
+  const chromeHeight =
+    statusBarHeight           // status bar
+    + 50                      // app header (نور + icons)
+    + 44                      // category tabs row
+    + 24                      // progress bar row
+    + spacing.md + spacing.lg // header band top+bottom padding
+    + 40                      // bandTop row (category chip + buttons)
+    + spacing.lg              // body padding top
+    + spacing.md              // body padding bottom (before footer)
+    + 1.5                     // divider
+    + spacing.md              // divider marginBottom
+    + 40                      // footer (source + heart)
+    + 60 + (insets.bottom || 8); // tab bar
+
+  // 4. Available height for content (arabic + translation + explanation)
+  const readMoreBuffer = Platform.OS === 'ios' ? (isTablet ? 80 : 40) : 0;
+  const availableHeight = screenHeight - chromeHeight - readMoreBuffer;
+
+  // 5. How much height does each section consume?
+  const arabicHeight = arabicLines * arabicLineHeight;
+  const translationHeight = translationLines * translationLineHeight;
+  const explanationHeight = estimatedExplanationLines * explanationLineHeight;
+
+  // 6. Truncation hierarchy — show as much as the device allows
+  let truncateArabic = false;
+  let truncateTranslation = false;
+  let explanationLines;
+  let maxArabicLines;
+  let maxTranslationLines;
+
+  if (isStoryCard) {
+    truncateArabic = false;
+    truncateTranslation = false;
+    if (isTablet) {
+      // Tablet: use height-aware logic same as other categories
+      const remainingForExplanation = availableHeight - translationHeight;
+      const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
+      if (estimatedExplanationLines > maxExplanationLines) {
+        explanationLines = maxExplanationLines;
+      } else {
+        explanationLines = undefined;
+      }
+    } else {
+      // Phone: keep character-count based
+      explanationLines = 8;
+    }
+  } else if (arabicHeight > availableHeight) {
+    // Case 1: Arabic alone exceeds screen — truncate arabic, hide translation + explanation
+    truncateArabic = true;
+    maxArabicLines = Math.max(2, Math.floor(availableHeight / arabicLineHeight) - 2); // leave room for Read more
+    explanationLines = 0;
+  } else if (arabicHeight + translationHeight > availableHeight) {
+    // Case 2: Arabic + translation exceeds screen — truncate translation, hide explanation
+    truncateTranslation = true;
+    const remainingForTranslation = availableHeight - arabicHeight;
+    maxTranslationLines = Math.max(2, Math.floor(remainingForTranslation / translationLineHeight) - 2);
+    explanationLines = 0;
+  } else {
+    // Case 3: Arabic + translation fit — budget the rest for explanation
+    const remainingForExplanation = availableHeight - arabicHeight - translationHeight;
+    const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
+    if (estimatedExplanationLines > maxExplanationLines) {
+      explanationLines = maxExplanationLines;
+    } else {
+      explanationLines = undefined; // fits fully, no truncation
+    }
+  }
+
+  const needsReadMore = card.explanation?.length > 450; // kept for Story compat
+
+  // Check if truncation actually removes content
+  const arabicActuallyTruncated = truncateArabic && arabicLines > maxArabicLines;
+  const translationActuallyTruncated = truncateTranslation && translationLines > maxTranslationLines;
+  const explanationActuallyTruncated = explanationLines !== undefined && explanationLines !== 0 && estimatedExplanationLines > explanationLines;
+
+  const showReadMore = isStoryCard
+    ? (isTablet
+        ? (explanationActuallyTruncated && !expanded)
+        : (needsReadMore && !expanded))
+    : (arabicActuallyTruncated || translationActuallyTruncated || explanationActuallyTruncated) && !expanded;
+
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
 
   const catColor      = getCategoryColor(card.category, colors);
   const catLightColor = getCategoryLightColor(card.category, colors);
   const catEmoji      = getCategoryEmoji(card.category);
-  const isStory        = card.category === 'Story';
+  const isStory        = isStoryCard;
   const showTranslitBtn = !!(card.arabic && card.transliteration);
 
   const styles = useMemo(() => StyleSheet.create({
@@ -101,7 +197,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     footer:        { flexDirection: 'row', alignItems: 'center', marginTop: spacing.md, paddingTop: spacing.sm, borderTopWidth: 1, gap: spacing.xs },
     sourceIcon:    { fontSize: scale(12) },
     sourceText:    { fontSize: scale(12), color: colors.textLight, fontWeight: '500', flex: 1 },
-    heart:         { fontSize: scale(20) },
+    heart:         { fontSize: scale(20), minWidth: scale(24) },
     hints:         { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: spacing.md, marginTop: spacing.sm },
     hintText:      { fontSize: scale(11), color: colors.textLight, fontWeight: '500' },
   }), [colors]);
@@ -224,7 +320,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
   return (
     <Animated.View
-      style={[styles.wrapper, { opacity: fadeAnim }]}
+      style={[styles.wrapper, { opacity: fadeAnim, width: isTablet ? screenWidth - 80 : CARD_MAX_WIDTH }]}
       {...panResponder.panHandlers}
     >
       <Animated.View style={[styles.cardShadow, { transform: [{ translateY: position.y }] }]}>
@@ -257,9 +353,23 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               </View>
             </View>
             {card.arabic && (
-              <Text style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}>
-                {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
-              </Text>
+              <>
+                <Text
+                  style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}
+                  numberOfLines={truncateArabic && !expanded ? maxArabicLines : undefined}
+                >
+                  {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
+                </Text>
+                {truncateArabic && !expanded && (
+                  <TouchableOpacity
+                    onPress={() => { expandedRef.current = true; setExpanded(true); }}
+                    activeOpacity={0.7}
+                    style={{ marginTop: 4 }}
+                  >
+                    <Text style={[styles.readMore, { color: '#FFFFFF' }]}>Read more ↓</Text>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
             {isStory && (
               <Text style={styles.storyHeadline}>{card.translation}</Text>
@@ -268,15 +378,18 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
 
           {/* ── Card body ── */}
           <View style={styles.body}>
-            {!isStory && <Text style={styles.translation}>{card.translation}</Text>}
-            <View style={[styles.divider, { backgroundColor: catLightColor }]} />
-            <Text
-              style={styles.explanation}
-              numberOfLines={explanationLines}
-            >
-              {card.explanation}
-            </Text>
-            {showReadMore && (
+            {/* Translation — hidden if arabic itself is truncated */}
+            {!isStory && !truncateArabic && (
+              <Text
+                style={styles.translation}
+                numberOfLines={truncateTranslation && !expanded ? maxTranslationLines : undefined}
+              >
+                {card.translation}
+              </Text>
+            )}
+
+            {/* Read more on translation */}
+            {!isStory && truncateTranslation && !expanded && (
               <TouchableOpacity
                 onPress={() => { expandedRef.current = true; setExpanded(true); }}
                 activeOpacity={0.7}
@@ -285,6 +398,28 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 <Text style={[styles.readMore, { color: catColor }]}>Read more ↓</Text>
               </TouchableOpacity>
             )}
+
+            {/* Divider + explanation — only when neither arabic nor translation is truncated */}
+            {!truncateArabic && !truncateTranslation && card.explanation ? (
+              <>
+                <View style={[styles.divider, { backgroundColor: catLightColor }]} />
+                <Text
+                  style={styles.explanation}
+                  numberOfLines={explanationLines}
+                >
+                  {card.explanation}
+                </Text>
+                {showReadMore && !expanded && (
+                  <TouchableOpacity
+                    onPress={() => { expandedRef.current = true; setExpanded(true); }}
+                    activeOpacity={0.7}
+                    style={{ marginTop: spacing.sm }}
+                  >
+                    <Text style={[styles.readMore, { color: catColor }]}>Read more ↓</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            ) : null}
 
             <View style={[styles.footer, { borderTopColor: catLightColor }]}>
               <Text style={styles.sourceIcon}>

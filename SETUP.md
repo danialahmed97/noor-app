@@ -85,17 +85,11 @@ Open `src/data/content.js` and add to the `content` array:
 
 ## Building for Production
 
-### iOS (requires Mac + Apple Developer account)
+See [BUILD.md](BUILD.md) for the full guide — quick version:
 ```bash
-npx eas build --platform ios
+npm run build:apk   # Android APK, for testing
+npm run build:aab   # Android AAB, for the Play Store
 ```
-
-### Android (APK)
-```bash
-npx eas build --platform android
-```
-
-Install EAS CLI first: `npm install -g eas-cli`
 
 ---
 
