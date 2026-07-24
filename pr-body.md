@@ -1,28 +1,30 @@
-## 🌙 Weekly card batch #7
+## 🌙 Weekly card batch #8
 
-**Theme:** The Believers' Character: Humility and Modesty
+**Theme:** The Day of Judgment: Hope and Accountability
 
-**Reasoning:** This theme allows for balanced content creation across all categories while addressing the deficit in Dua (56) and Story (61) categories. Humility is richly covered in Quranic verses (Ayah), prophetic traditions (Hadith), contains inspiring stories of companions and prophets demonstrating modesty (Story), and has specific supplications for self-purification (Dua). The theme is practical, relatable to daily life, distinct from recent themes, and provides concrete examples of Islamic character-building that resonates with modern audiences seeking spiritual growth.
+**Reasoning:** This theme allows balanced growth across all categories: Ayahs describing the Day (to maintain Ayah lead), Hadiths on signs and preparation (boosting underrepresented Hadith), Stories of righteous predecessors' fear and hope (growing Story category), and Duas for forgiveness and good ending (significantly boosting the most underrepresented Dua category from 60 cards). The theme is spiritually impactful, hasn't been recently covered, and naturally distributes across all four content types.
 
 **Stats:**
-- Total cards added: 13
-- Cards dropped (failed validation): 2
-- By category: Story: 7, Dua: 4, Hadith: 1, Ayah: 1
+- Total cards added: 15
+- Cards dropped (failed validation): 0
+- By category: Story: 7, Ayah: 4, Dua: 4
 
 **Card IDs added:**
-- story_prophet_walks_humbly
-- story_umar_night_patrol
-- dua_humility_1
-- story_abu_bakr_slave
-- dua_modesty_1
-- story_aishah_modesty
-- hadith_bukhari_6029
-- story_salman_persian_humble
-- dua_pride_refuge
-- story_prophet_mends_sandals
-- ayah_17_37
-- dua_after_praise
-- story_imam_malik_student
+- story_scales_judgment
+- story_first_judged_ummah
+- ayah_99_7
+- ayah_99_8
+- dua_judgment_shade
+- story_man_card_good_deeds
+- story_bridge_sirat
+- ayah_18_49
+- dua_good_ending
+- story_intercession_prophet
+- dua_fear_hope_balance
+- story_young_old_wealthy_poor
+- ayah_82_10
+- story_man_entered_jannah_pride
+- dua_safety_judgment
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
