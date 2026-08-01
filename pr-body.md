@@ -1,30 +1,30 @@
-## 🌙 Weekly card batch #8
+## 🌙 Weekly card batch #9
 
-**Theme:** The Day of Judgment: Hope and Accountability
+**Theme:** Dua: Seeking Allah's Forgiveness and Mercy
 
-**Reasoning:** This theme allows balanced growth across all categories: Ayahs describing the Day (to maintain Ayah lead), Hadiths on signs and preparation (boosting underrepresented Hadith), Stories of righteous predecessors' fear and hope (growing Story category), and Duas for forgiveness and good ending (significantly boosting the most underrepresented Dua category from 60 cards). The theme is spiritually impactful, hasn't been recently covered, and naturally distributes across all four content types.
+**Reasoning:** Dua is the most under-represented category with only 64 cards compared to 118 Ayahs. A focused theme on seeking forgiveness (istighfar) and mercy allows for rich Dua content while also naturally incorporating supporting Ayahs about Allah's attributes (Al-Ghafoor, Ar-Raheem), Hadith about the virtues of repentance, and Stories of prophets who sought forgiveness (Adam, Yunus AS). This theme is spiritually uplifting, universally relevant to all Muslims, and distinct from recent themes.
 
 **Stats:**
 - Total cards added: 15
 - Cards dropped (failed validation): 0
-- By category: Story: 7, Ayah: 4, Dua: 4
+- By category: Story: 6, Dua: 6, Ayah: 2, Hadith: 1
 
 **Card IDs added:**
-- story_scales_judgment
-- story_first_judged_ummah
-- ayah_99_7
-- ayah_99_8
-- dua_judgment_shade
-- story_man_card_good_deeds
-- story_bridge_sirat
-- ayah_18_49
-- dua_good_ending
-- story_intercession_prophet
-- dua_fear_hope_balance
-- story_young_old_wealthy_poor
-- ayah_82_10
-- story_man_entered_jannah_pride
-- dua_safety_judgment
+- story_garment_trader_100_sins
+- dua_forgiveness_comprehensive_2
+- ayah_24_22
+- dua_forgiveness_night_tahajjud
+- story_angel_carrying_mushaf
+- dua_forgiveness_parents_mercy
+- ayah_40_7
+- story_man_never_did_good_deed
+- dua_forgiveness_between_sujood
+- story_companion_tears_quran
+- hadith_sins_like_foam
+- dua_asking_forgiveness_seventy_times
+- story_woman_zinah_stoned_forgiven
+- dua_forgiveness_after_sin_immediate
+- story_prophet_forgave_killers_uhud
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
