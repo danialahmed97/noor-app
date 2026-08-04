@@ -23,3 +23,10 @@ jobs:
           token: ${{ secrets.EAS_TOKEN }}
       - name: Publish update
         run: eas update --branch main --message "Auto-deploy from main" --non-interactive
+      - name: Send push notification
+        run: |
+          THEME=$(node -e "const t = require('./state/topics.json'); console.log(t.overrideTheme || t.lastTheme || 'New content')")
+          curl -s -X POST https://noor-api.gymfund.in/send \
+            -H "Content-Type: application/json" \
+            -H "x-noor-secret: ${{ secrets.NOOR_SEND_SECRET }}" \
+            -d "{\"theme\": \"$THEME\"}"
