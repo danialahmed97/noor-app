@@ -27,7 +27,8 @@
       },
       "package": "com.noor.islamic.dawah",
       "userInterfaceStyle": "automatic",
-      "versionCode": 2
+      "versionCode": 2,
+      "googleServicesFile": "./google-services.json"
     },
     "androidStatusBar": {
       "backgroundColor": "#0D5016",

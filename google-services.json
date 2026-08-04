@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1069084874225",
+    "project_id": "noor-islamic-dawah",
+    "storage_bucket": "noor-islamic-dawah.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069084874225:android:f15f4a58c3afaf00836050",
+        "android_client_info": {
+          "package_name": "com.noor.islamic.dawah"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMMIiItnz9j_T4Q_inrExkTuH-OYJoMLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
