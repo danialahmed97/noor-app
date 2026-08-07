@@ -1,30 +1,30 @@
-## 🌙 Weekly card batch #9
+## 🌙 Weekly card batch #10
 
-**Theme:** Dua: Seeking Allah's Forgiveness and Mercy
+**Theme:** Names of Allah: Al-Hakim (The All-Wise)
 
-**Reasoning:** Dua is the most under-represented category with only 64 cards compared to 118 Ayahs. A focused theme on seeking forgiveness (istighfar) and mercy allows for rich Dua content while also naturally incorporating supporting Ayahs about Allah's attributes (Al-Ghafoor, Ar-Raheem), Hadith about the virtues of repentance, and Stories of prophets who sought forgiveness (Adam, Yunus AS). This theme is spiritually uplifting, universally relevant to all Muslims, and distinct from recent themes.
+**Reasoning:** This theme allows us to strengthen the underrepresented Dua category (70 cards) with supplications invoking Allah's wisdom, while also providing rich material for Ayah cards discussing divine wisdom, Hadith cards on seeking wisdom, and Story cards illustrating wisdom in prophetic decisions. It's a fresh angle different from recent themes focused on prophets, character traits, judgment day, and forgiveness, offering spiritual depth while balancing category distribution.
 
 **Stats:**
 - Total cards added: 15
 - Cards dropped (failed validation): 0
-- By category: Story: 6, Dua: 6, Ayah: 2, Hadith: 1
+- By category: Story: 7, Ayah: 4, Dua: 4
 
 **Card IDs added:**
-- story_garment_trader_100_sins
-- dua_forgiveness_comprehensive_2
-- ayah_24_22
-- dua_forgiveness_night_tahajjud
-- story_angel_carrying_mushaf
-- dua_forgiveness_parents_mercy
-- ayah_40_7
-- story_man_never_did_good_deed
-- dua_forgiveness_between_sujood
-- story_companion_tears_quran
-- hadith_sins_like_foam
-- dua_asking_forgiveness_seventy_times
-- story_woman_zinah_stoned_forgiven
-- dua_forgiveness_after_sin_immediate
-- story_prophet_forgave_killers_uhud
+- story_hakim_yusuf_plan
+- ayah_12_21
+- dua_hakim_1
+- story_hakim_blind_companion
+- ayah_2_216
+- story_hakim_umar_drought
+- dua_hakim_acceptance
+- story_hakim_ibrahim_sacrifice
+- ayah_3_154
+- dua_hakim_guidance
+- story_hakim_musa_khidr_boat
+- ayah_31_16
+- story_hakim_woman_child_prayer
+- dua_hakim_trust
+- story_hakim_imam_shafi_calamity
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
