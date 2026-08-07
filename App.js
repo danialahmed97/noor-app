@@ -5,14 +5,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Application from 'expo-application';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import HomeScreen from './src/screens/HomeScreen';
 import SavedScreen from './src/screens/SavedScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { Text } from 'react-native';
 import SplashAnimation from './src/components/SplashAnimation';
-import UpdateModal from './src/components/UpdateModal';
 import { registerForPushNotifications } from './src/utils/registerPush';
 
 // Keep splash screen visible until we are ready
@@ -118,29 +116,14 @@ function Root() {
 }
 
 export default function App() {
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-
   useEffect(() => {
     registerForPushNotifications();
-  }, []);
-
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      const versionCode = Application.nativeBuildVersion;
-      if (parseInt(versionCode, 10) < 2) {
-        setShowUpdateModal(true);
-      }
-    }
   }, []);
 
   return (
     <SafeAreaProvider>
       <ThemeProvider>
         <Root />
-        <UpdateModal
-          visible={showUpdateModal}
-          onDismiss={() => setShowUpdateModal(false)}
-        />
       </ThemeProvider>
     </SafeAreaProvider>
   );
