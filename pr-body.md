@@ -1,8 +1,8 @@
-## 🌙 Weekly card batch #8
+## 🌙 Weekly card batch #10
 
-**Theme:** The Day of Judgment: Hope and Accountability
+**Theme:** Names of Allah: Al-Hakim (The All-Wise)
 
-**Reasoning:** This theme allows balanced growth across all categories: Ayahs describing the Day (to maintain Ayah lead), Hadiths on signs and preparation (boosting underrepresented Hadith), Stories of righteous predecessors' fear and hope (growing Story category), and Duas for forgiveness and good ending (significantly boosting the most underrepresented Dua category from 60 cards). The theme is spiritually impactful, hasn't been recently covered, and naturally distributes across all four content types.
+**Reasoning:** This theme allows us to strengthen the underrepresented Dua category (70 cards) with supplications invoking Allah's wisdom, while also providing rich material for Ayah cards discussing divine wisdom, Hadith cards on seeking wisdom, and Story cards illustrating wisdom in prophetic decisions. It's a fresh angle different from recent themes focused on prophets, character traits, judgment day, and forgiveness, offering spiritual depth while balancing category distribution.
 
 **Stats:**
 - Total cards added: 15
@@ -10,21 +10,21 @@
 - By category: Story: 7, Ayah: 4, Dua: 4
 
 **Card IDs added:**
-- story_scales_judgment
-- story_first_judged_ummah
-- ayah_99_7
-- ayah_99_8
-- dua_judgment_shade
-- story_man_card_good_deeds
-- story_bridge_sirat
-- ayah_18_49
-- dua_good_ending
-- story_intercession_prophet
-- dua_fear_hope_balance
-- story_young_old_wealthy_poor
-- ayah_82_10
-- story_man_entered_jannah_pride
-- dua_safety_judgment
+- story_hakim_yusuf_plan
+- ayah_12_21
+- dua_hakim_1
+- story_hakim_blind_companion
+- ayah_2_216
+- story_hakim_umar_drought
+- dua_hakim_acceptance
+- story_hakim_ibrahim_sacrifice
+- ayah_3_154
+- dua_hakim_guidance
+- story_hakim_musa_khidr_boat
+- ayah_31_16
+- story_hakim_woman_child_prayer
+- dua_hakim_trust
+- story_hakim_imam_shafi_calamity
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy

@@ -13,6 +13,8 @@ crash.log
 *.jks
 *.keystore
 upload_certificate.pem
+credentials.json
+credentials/
 
 # Build artifacts
 build-*.aab
@@ -20,3 +22,5 @@ build-*.apk
 *.aab
 *.apk
 *.apks
+noor-signed.apks
+noor_apk/
