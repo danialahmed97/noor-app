@@ -41,6 +41,15 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const correctionAppliedRef = useRef(false);
   const lastSlotHeightRef = useRef(0);
 
+  // ── Measured arabic/translation line counts — feed the Case 3 / story
+  //    explanation budget so it uses real rendered heights, not char estimates ──
+  const [measuredArabicLines, setMeasuredArabicLines] = useState(0);
+  const measuredArabicLinesRef = useRef(0);
+  const [measuredTranslitLines, setMeasuredTranslitLines] = useState(0);
+  const measuredTranslitLinesRef = useRef(0);
+  const [measuredTranslationLines, setMeasuredTranslationLines] = useState(0);
+  const measuredTranslationLinesRef = useRef(0);
+
   // ── Height-aware overflow logic ──
   // All values are synchronous — no async measurement, no race conditions.
   const screenWidth = liveWidth;
@@ -66,22 +75,28 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const arabicLineHeight = scale(38);
   const translationLineHeight = scale(26);
   const explanationLineHeight = scale(23);
+  const translitLineHeight = scale(20); // styles.translitText lineHeight
 
   // 3. Chrome height — everything that isn't card content
   const statusBarHeight = Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : insets.top;
-  const chromeHeight =
+  // Screen-level chrome — outside the card itself (status bar, app header, tabs, tab bar)
+  const screenChrome =
     statusBarHeight           // status bar
     + 50                      // app header (نور + icons)
     + 44                      // category tabs row
     + 24                      // progress bar row
-    + spacing.md + spacing.lg // header band top+bottom padding
-    + 40                      // bandTop row (category chip + buttons)
-    + spacing.lg              // body padding top
-    + spacing.md              // body padding bottom (before footer)
-    + 1.5                     // divider
-    + spacing.md              // divider marginBottom
-    + 40                      // footer (source + heart)
     + 60 + (insets.bottom || 8); // tab bar
+  // Card-internal chrome — padding/divider/footer inside the card's own layout.
+  // Used standalone against slotHeight for the measured explanation budget below.
+  const cardChrome =
+    spacing.md + spacing.lg // header band top+bottom padding
+    + 40                     // bandTop row (category chip + buttons)
+    + spacing.lg             // body padding top
+    + spacing.md             // body padding bottom (before footer)
+    + 1.5                    // divider
+    + spacing.md             // divider marginBottom
+    + 40;                    // footer (source + heart)
+  const chromeHeight = screenChrome + cardChrome;
 
   // 4. Available height for content (arabic + translation + explanation)
   const readMoreBuffer = Platform.OS === 'ios' ? (isTablet ? 80 : 40) : 0;
@@ -91,6 +106,11 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const arabicHeight = arabicLines * arabicLineHeight;
   const translationHeight = translationLines * translationLineHeight;
   const explanationHeight = estimatedExplanationLines * explanationLineHeight;
+
+  // Use measured header height when available (transliteration is much shorter than arabic)
+  const effectiveArabicHeight = (showTransliteration && card.transliteration && measuredTranslitLines > 0)
+    ? measuredTranslitLines * translitLineHeight
+    : arabicHeight;
 
   // 6. Truncation hierarchy — show as much as the device allows
   let truncateArabic = false;
@@ -103,27 +123,27 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     truncateArabic = false;
     truncateTranslation = false;
     const remainingForExplanation = availableHeight - translationHeight;
-    const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
+    const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight));
     if (estimatedExplanationLines > maxExplanationLines) {
       explanationLines = maxExplanationLines;
     } else {
       explanationLines = undefined;
     }
-  } else if (arabicHeight > availableHeight) {
+  } else if (effectiveArabicHeight > availableHeight) {
     // Case 1: Arabic alone exceeds screen — truncate arabic, hide translation + explanation
     truncateArabic = true;
-    maxArabicLines = Math.max(2, Math.floor(availableHeight / arabicLineHeight) - 2); // leave room for Read more
+    maxArabicLines = Math.max(2, Math.floor(availableHeight / arabicLineHeight));
     explanationLines = 0;
-  } else if (arabicHeight + translationHeight > availableHeight) {
+  } else if (effectiveArabicHeight + translationHeight > availableHeight) {
     // Case 2: Arabic + translation exceeds screen — truncate translation, hide explanation
     truncateTranslation = true;
-    const remainingForTranslation = availableHeight - arabicHeight;
-    maxTranslationLines = Math.max(2, Math.floor(remainingForTranslation / translationLineHeight) - 2);
+    const remainingForTranslation = availableHeight - effectiveArabicHeight;
+    maxTranslationLines = Math.max(2, Math.floor(remainingForTranslation / translationLineHeight));
     explanationLines = 0;
   } else {
     // Case 3: Arabic + translation fit — budget the rest for explanation
-    const remainingForExplanation = availableHeight - arabicHeight - translationHeight;
-    const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
+    const remainingForExplanation = availableHeight - effectiveArabicHeight - translationHeight;
+    const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight));
     if (estimatedExplanationLines > maxExplanationLines) {
       explanationLines = maxExplanationLines;
     } else {
@@ -131,12 +151,40 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     }
   }
 
+  // ── Measured explanation budget — supersedes the char-estimate formula
+  //    above (Case 3 / stories only) once real arabic/translation heights
+  //    are known. Case 1/2 (arabic or translation truncation) stay on the
+  //    formula — they're rare and out of scope here. ──
+  const arabicPresent = !isStoryCard && !!card.arabic;
+  const showingTranslit = arabicPresent && showTransliteration && !!card.transliteration;
+  const measuredArabicHeight = measuredArabicLines > 0 ? measuredArabicLines * arabicLineHeight : null;
+  const measuredTranslitHeight = measuredTranslitLines > 0 ? measuredTranslitLines * translitLineHeight : null;
+  const headerTextHeight = showingTranslit
+    ? measuredTranslitHeight
+    : (arabicPresent ? measuredArabicHeight : 0);
+  const measuredTranslationHeight = measuredTranslationLines > 0 ? measuredTranslationLines * translationLineHeight : null;
+
+  const measurementsReady =
+    !truncateArabic
+    && !truncateTranslation
+    && headerTextHeight !== null
+    && measuredTranslationHeight !== null;
+
+  let measuredMaxExplanationLines = null;
+  if (!expanded && slotHeight > 0 && measurementsReady) {
+    const measuredRemaining = slotHeight - cardChrome - headerTextHeight - measuredTranslationHeight;
+    measuredMaxExplanationLines = Math.max(1, Math.floor(measuredRemaining / explanationLineHeight));
+    const linesForDecision = fullExplLines > 0 ? fullExplLines : estimatedExplanationLines;
+    explanationLines = linesForDecision > measuredMaxExplanationLines ? measuredMaxExplanationLines : undefined;
+  }
+
   const needsReadMore = card.explanation?.length > 450; // kept for Story compat
 
   // Check if truncation actually removes content
   const arabicActuallyTruncated = truncateArabic && arabicLines > maxArabicLines;
   const translationActuallyTruncated = truncateTranslation && translationLines > maxTranslationLines;
-  const explanationActuallyTruncated = explanationLines !== undefined && explanationLines !== 0 && estimatedExplanationLines > explanationLines;
+  const explanationActuallyTruncated = explanationLines !== undefined && explanationLines !== 0
+    && (fullExplLines > 0 ? fullExplLines : estimatedExplanationLines) > explanationLines;
 
   const showReadMoreBase = (arabicActuallyTruncated || translationActuallyTruncated || explanationActuallyTruncated) && !expanded;
 
@@ -223,19 +271,25 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     expandedRef.current = false;
     setExpanded(false);
 
+    let fadeInTimer;
     if (instant) {
       fadeAnim.setValue(1);
       onMounted?.();
     } else {
       fadeAnim.setValue(0);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }).start(() => onMounted?.());
+      // Small delay so onLayout/onTextLayout measurements settle before the card fades in.
+      fadeInTimer = setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        }).start(() => onMounted?.());
+      }, 50);
     }
 
     isCardSaved(card.id).then(setSaved);
+
+    return () => { if (fadeInTimer) clearTimeout(fadeInTimer); };
   }, [card.id]);
 
   useEffect(() => {
@@ -271,7 +325,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     if (slotHeight > 0) lastSlotHeightRef.current = slotHeight;
 
     if (expanded) return;
-    if (correctionAppliedRef.current) return;
+    if (correctionAppliedRef.current && contentHeight <= slotHeight + 2) return;
     if (slotHeight <= 0) return;
     if (contentHeight <= 0) return;
 
@@ -281,7 +335,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     if (contentHeight > usableSlot + 2) {
       // Formula underestimated content height (e.g. iQOO Neo 7) — shrink explanation lines.
       const extraLines = Math.ceil((contentHeight - usableSlot) / explanationLineHeight);
-      if (extraLines !== lineAdjustment) setLineAdjustment(extraLines);
+      setLineAdjustment(prev => prev + extraLines);
       correctionAppliedRef.current = true;
     } else if (fullExplLines > 0 && explanationLines !== undefined && fullExplLines <= explanationLines) {
       // Formula overestimated — full explanation already fits, Read more is redundant.
@@ -411,6 +465,20 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 <Text
                   style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}
                   numberOfLines={truncateArabic && !expanded ? maxArabicLines : undefined}
+                  onTextLayout={(e) => {
+                    const lines = e.nativeEvent.lines.length;
+                    if (showTransliteration && card.transliteration) {
+                      if (lines !== measuredTranslitLinesRef.current) {
+                        measuredTranslitLinesRef.current = lines;
+                        setMeasuredTranslitLines(lines);
+                      }
+                    } else {
+                      if (lines !== measuredArabicLinesRef.current) {
+                        measuredArabicLinesRef.current = lines;
+                        setMeasuredArabicLines(lines);
+                      }
+                    }
+                  }}
                 >
                   {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
                 </Text>
@@ -426,7 +494,18 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               </>
             )}
             {isStory && (
-              <Text style={styles.storyHeadline}>{card.translation}</Text>
+              <Text
+                style={styles.storyHeadline}
+                onTextLayout={(e) => {
+                  const lines = e.nativeEvent.lines.length;
+                  if (lines !== measuredTranslationLinesRef.current) {
+                    measuredTranslationLinesRef.current = lines;
+                    setMeasuredTranslationLines(lines);
+                  }
+                }}
+              >
+                {card.translation}
+              </Text>
             )}
           </View>
 
@@ -437,6 +516,13 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               <Text
                 style={styles.translation}
                 numberOfLines={truncateTranslation && !expanded ? maxTranslationLines : undefined}
+                onTextLayout={(e) => {
+                  const lines = e.nativeEvent.lines.length;
+                  if (lines !== measuredTranslationLinesRef.current) {
+                    measuredTranslationLinesRef.current = lines;
+                    setMeasuredTranslationLines(lines);
+                  }
+                }}
               >
                 {card.translation}
               </Text>
