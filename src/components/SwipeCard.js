@@ -271,25 +271,30 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     expandedRef.current = false;
     setExpanded(false);
 
-    let fadeInTimer;
     if (instant) {
       fadeAnim.setValue(1);
       onMounted?.();
     } else {
       fadeAnim.setValue(0);
-      // Small delay so onLayout/onTextLayout measurements settle before the card fades in.
-      fadeInTimer = setTimeout(() => {
+      if (Platform.OS === 'ios') {
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 150,
           useNativeDriver: true,
         }).start(() => onMounted?.());
-      }, 50);
+      } else {
+        const timer = setTimeout(() => {
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 150,
+            useNativeDriver: true,
+          }).start(() => onMounted?.());
+        }, 40);
+        // cleanup handled by component remount via key
+      }
     }
 
     isCardSaved(card.id).then(setSaved);
-
-    return () => { if (fadeInTimer) clearTimeout(fadeInTimer); };
   }, [card.id]);
 
   useEffect(() => {
