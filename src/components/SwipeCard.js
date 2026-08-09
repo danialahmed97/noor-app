@@ -19,7 +19,7 @@ const SWIPE_THRESHOLD = 60;
 const SWIPE_DURATION  = 220;
 const WATERMARK       = { Ayah: '✦', Hadith: '☽', Story: '✺', Dua: '❋' };
 
-export default function SwipeCard({ card, onNext, onPrev, showHints, instant, onMounted }) {
+export default function SwipeCard({ card, onNext, onPrev, showHints, instant, onMounted, slotHeight }) {
   const { colors, showTransliteration, toggleTransliteration } = useTheme();
   const { width: liveWidth, height: liveHeight } = useWindowDimensions();
   const position  = useRef(new Animated.ValueXY()).current;
@@ -29,6 +29,17 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const [expanded,      setExpanded]      = useState(false);
   const [saved,         setSaved]         = useState(false);
   const insets      = useSafeAreaInsets();
+
+  // ── Measurement-based correction layer (post-mount, one-shot per card) ──
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentHeightRef = useRef(0);
+  const [hintsHeight, setHintsHeight] = useState(0);
+  const [fullExplLines, setFullExplLines] = useState(0);
+  const fullExplLinesRef = useRef(0);
+  const [lineAdjustment, setLineAdjustment] = useState(0);
+  const [readMoreOverride, setReadMoreOverride] = useState(null);
+  const correctionAppliedRef = useRef(false);
+  const lastSlotHeightRef = useRef(0);
 
   // ── Height-aware overflow logic ──
   // All values are synchronous — no async measurement, no race conditions.
@@ -91,18 +102,12 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   if (isStoryCard) {
     truncateArabic = false;
     truncateTranslation = false;
-    if (isTablet) {
-      // Tablet: use height-aware logic same as other categories
-      const remainingForExplanation = availableHeight - translationHeight;
-      const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
-      if (estimatedExplanationLines > maxExplanationLines) {
-        explanationLines = maxExplanationLines;
-      } else {
-        explanationLines = undefined;
-      }
+    const remainingForExplanation = availableHeight - translationHeight;
+    const maxExplanationLines = Math.max(1, Math.floor(remainingForExplanation / explanationLineHeight) - 1);
+    if (estimatedExplanationLines > maxExplanationLines) {
+      explanationLines = maxExplanationLines;
     } else {
-      // Phone: keep character-count based
-      explanationLines = 8;
+      explanationLines = undefined;
     }
   } else if (arabicHeight > availableHeight) {
     // Case 1: Arabic alone exceeds screen — truncate arabic, hide translation + explanation
@@ -133,11 +138,21 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const translationActuallyTruncated = truncateTranslation && translationLines > maxTranslationLines;
   const explanationActuallyTruncated = explanationLines !== undefined && explanationLines !== 0 && estimatedExplanationLines > explanationLines;
 
-  const showReadMore = isStoryCard
-    ? (isTablet
-        ? (explanationActuallyTruncated && !expanded)
-        : (needsReadMore && !expanded))
-    : (arabicActuallyTruncated || translationActuallyTruncated || explanationActuallyTruncated) && !expanded;
+  const showReadMoreBase = (arabicActuallyTruncated || translationActuallyTruncated || explanationActuallyTruncated) && !expanded;
+
+  // ── Post-mount correction: measured content/hints/full-explanation-lines
+  //    nudge the formula's output without touching it above ──
+  const effectiveExplanationLines = lineAdjustment === 0
+    ? explanationLines
+    : (explanationLines !== undefined
+        ? Math.max(1, explanationLines - lineAdjustment)
+        : Math.max(1, (fullExplLines || estimatedExplanationLines) - lineAdjustment));
+
+  const showReadMore = readMoreOverride === false
+    ? false
+    : (lineAdjustment > 0 && !expanded)
+      ? true
+      : (showReadMoreBase || (fullExplLines > 0 && effectiveExplanationLines !== undefined && fullExplLines > effectiveExplanationLines && !expanded));
 
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
@@ -242,6 +257,39 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     return () => handler.remove();
   }, [expanded]);
 
+  // ── One-shot measurement correction ──
+  // Corrects the formula's initial estimate using real layout measurements.
+  // Shrink-only / hide-only: never expands content or force-shows Read more
+  // beyond the overflow case. Resets on a >50dp slotHeight change (rotation)
+  // so a fresh correction can apply.
+  useEffect(() => {
+    if (lastSlotHeightRef.current > 0 && Math.abs(slotHeight - lastSlotHeightRef.current) > 50) {
+      correctionAppliedRef.current = false;
+      setLineAdjustment(0);
+      setReadMoreOverride(null);
+    }
+    if (slotHeight > 0) lastSlotHeightRef.current = slotHeight;
+
+    if (expanded) return;
+    if (correctionAppliedRef.current) return;
+    if (slotHeight <= 0) return;
+    if (contentHeight <= 0) return;
+
+    const measuredHintsHeight = showHints ? hintsHeight : 0;
+    const usableSlot = slotHeight - measuredHintsHeight;
+
+    if (contentHeight > usableSlot + 2) {
+      // Formula underestimated content height (e.g. iQOO Neo 7) — shrink explanation lines.
+      const extraLines = Math.ceil((contentHeight - usableSlot) / explanationLineHeight);
+      if (extraLines !== lineAdjustment) setLineAdjustment(extraLines);
+      correctionAppliedRef.current = true;
+    } else if (fullExplLines > 0 && explanationLines !== undefined && fullExplLines <= explanationLines) {
+      // Formula overestimated — full explanation already fits, Read more is redundant.
+      if (readMoreOverride !== false) setReadMoreOverride(false);
+      correctionAppliedRef.current = true;
+    }
+  }, [slotHeight, contentHeight, fullExplLines, expanded]);
+
   const handleHeartPress = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const next = !saved;
@@ -325,6 +373,12 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     >
       <Animated.View style={[styles.cardShadow, { transform: [{ translateY: position.y }] }]}>
         <View style={styles.cardClip}>
+          <View
+            onLayout={(e) => {
+              contentHeightRef.current = e.nativeEvent.layout.height;
+              setContentHeight(e.nativeEvent.layout.height);
+            }}
+          >
 
           {/* ── Gradient header band ── */}
           <View style={[styles.headerBand, { backgroundColor: catColor }]}>
@@ -405,7 +459,18 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 <View style={[styles.divider, { backgroundColor: catLightColor }]} />
                 <Text
                   style={styles.explanation}
-                  numberOfLines={explanationLines}
+                  numberOfLines={effectiveExplanationLines}
+                >
+                  {card.explanation}
+                </Text>
+                {/* Hidden measurement text — reveals real rendered line count for correction */}
+                <Text
+                  style={[styles.explanation, { position: 'absolute', opacity: 0, left: spacing.lg, right: spacing.lg, top: 0 }]}
+                  pointerEvents="none"
+                  onTextLayout={(e) => {
+                    fullExplLinesRef.current = e.nativeEvent.lines.length;
+                    setFullExplLines(e.nativeEvent.lines.length);
+                  }}
                 >
                   {card.explanation}
                 </Text>
@@ -434,12 +499,13 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
             </View>
           </View>
 
+          </View>
         </View>
       </Animated.View>
 
       {/* ── Swipe hints (only if showHints=true) ── */}
       {showHints && (
-        <View style={styles.hints}>
+        <View style={styles.hints} onLayout={(e) => setHintsHeight(e.nativeEvent.layout.height)}>
           <Text style={styles.hintText}>↑ Next</Text>
           <Text style={styles.hintText}>↓ Prev</Text>
         </View>

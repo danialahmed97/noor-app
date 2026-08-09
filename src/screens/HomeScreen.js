@@ -28,6 +28,7 @@ export default function HomeScreen({ navigation, route }) {
   const [index,   setIndex]   = useState(0);
   const [cardKey, setCardKey] = useState(0);
   const [showHints, setShowHints] = useState(false);
+  const [slotHeight, setSlotHeight] = useState(0);
   const toastAnim = useRef(new Animated.Value(0)).current;
   const [toastMsg, setToastMsg] = useState('');
   const [openingFromSaved, setOpeningFromSaved] = useState(false);
@@ -181,7 +182,10 @@ export default function HomeScreen({ navigation, route }) {
       {/* ── Card area ── */}
       <View style={styles.cardArea}>
         {currentCard ? (
-          <View style={{ flex: 1, justifyContent: 'center', maxHeight: '100%' }}>
+          <View
+            style={{ flex: 1, justifyContent: 'center', maxHeight: '100%' }}
+            onLayout={(e) => setSlotHeight(e.nativeEvent.layout.height)}
+          >
             <SwipeCard
               key={`${cardKey}-${currentCard.id}`}
               card={currentCard}
@@ -190,6 +194,7 @@ export default function HomeScreen({ navigation, route }) {
               showHints={showHints}
               instant={openingFromSaved}
               onMounted={handleCardMounted}
+              slotHeight={slotHeight}
             />
           </View>
         ) : (

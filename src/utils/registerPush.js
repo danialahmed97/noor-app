@@ -13,21 +13,17 @@ export async function registerForPushNotifications() {
       finalStatus = status;
     }
 
-    console.log('[push] permission status:', finalStatus);
-
     if (finalStatus !== 'granted') return;
 
     const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? '0a625db5-899f-4e73-94bc-f9ab626cd232';
     const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
-    console.log('[push] token:', token);
     if (!token) return;
 
-    const response = await fetch(REGISTER_URL, {
+    await fetch(REGISTER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     });
-    console.log('[push] register response status:', response.status);
   } catch (err) {
     console.warn('[push] registration failed:', err);
   }
