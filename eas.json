@@ -34,9 +34,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "YOUR_APPLE_ID_EMAIL",
-        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
-        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        "appleId": "gymfund.support@gmail.com",
+        "ascAppId": "6800446345",
+        "appleTeamId": "H7W6N6589S"
       },
       "android": {
         "serviceAccountKeyPath": "./google-services.json",

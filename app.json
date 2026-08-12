@@ -17,8 +17,13 @@
       "./plugins/withAdiToken"
     ],
     "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.noor.islamic.dawah"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.noor.islamic.dawah",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "Noor",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
