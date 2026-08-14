@@ -1,30 +1,30 @@
-## 🌙 Weekly card batch #10
+## 🌙 Weekly card batch #11
 
-**Theme:** Names of Allah: Al-Hakim (The All-Wise)
+**Theme:** Dua: Seeking Knowledge and Guidance
 
-**Reasoning:** This theme allows us to strengthen the underrepresented Dua category (70 cards) with supplications invoking Allah's wisdom, while also providing rich material for Ayah cards discussing divine wisdom, Hadith cards on seeking wisdom, and Story cards illustrating wisdom in prophetic decisions. It's a fresh angle different from recent themes focused on prophets, character traits, judgment day, and forgiveness, offering spiritual depth while balancing category distribution.
+**Reasoning:** Dua is the most under-represented category at 74 cards (compared to Ayah at 124). This theme provides clear, actionable content for the Dua category while avoiding repetition of recent themes. It addresses a universal need among Muslims—seeking knowledge and guidance—and naturally generates diverse, meaningful supplications from the Quran and Sunnah that users can incorporate into their daily lives.
 
 **Stats:**
 - Total cards added: 15
 - Cards dropped (failed validation): 0
-- By category: Story: 7, Ayah: 4, Dua: 4
+- By category: Story: 6, Dua: 7, Ayah: 2
 
 **Card IDs added:**
-- story_hakim_yusuf_plan
-- ayah_12_21
-- dua_hakim_1
-- story_hakim_blind_companion
-- ayah_2_216
-- story_hakim_umar_drought
-- dua_hakim_acceptance
-- story_hakim_ibrahim_sacrifice
-- ayah_3_154
-- dua_hakim_guidance
-- story_hakim_musa_khidr_boat
-- ayah_31_16
-- story_hakim_woman_child_prayer
-- dua_hakim_trust
-- story_hakim_imam_shafi_calamity
+- story_musa_knowledge_khidr
+- dua_knowledge_2
+- ayah_20_114
+- dua_understanding_quran
+- story_ibn_abbas_dua_understanding
+- dua_guidance_morning
+- story_umar_guided_man
+- ayah_1_5
+- dua_beneficial_knowledge
+- story_imam_shafii_humility
+- dua_refuge_useless_knowledge
+- story_companion_quran_memorization
+- dua_firm_understanding
+- story_imam_malik_feet_teacher
+- dua_show_me_truth
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
