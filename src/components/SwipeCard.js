@@ -36,8 +36,16 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
   const [hintsHeight, setHintsHeight] = useState(0);
   const [fullExplLines, setFullExplLines] = useState(0);
   const fullExplLinesRef = useRef(0);
+  const [fullTransLines, setFullTransLines] = useState(0);
+  const fullTransLinesRef = useRef(0);
+  const [fullArabicLines, setFullArabicLines] = useState(0);
+  const fullArabicLinesRef = useRef(0);
   const [lineAdjustment, setLineAdjustment] = useState(0);
+  const [transLineAdjustment, setTransLineAdjustment] = useState(0);
+  const [arabicLineAdjustment, setArabicLineAdjustment] = useState(0);
   const [readMoreOverride, setReadMoreOverride] = useState(null);
+  const [transReadMoreOverride, setTransReadMoreOverride] = useState(null);
+  const [arabicReadMoreOverride, setArabicReadMoreOverride] = useState(null);
   const correctionAppliedRef = useRef(false);
   const lastSlotHeightRef = useRef(0);
 
@@ -202,6 +210,26 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
       ? true
       : (showReadMoreBase || (fullExplLines > 0 && effectiveExplanationLines !== undefined && fullExplLines > effectiveExplanationLines && !expanded));
 
+  // ── Translation / arabic post-mount correction ──
+  const effectiveMaxTranslationLines = maxTranslationLines !== undefined
+    ? Math.max(1, maxTranslationLines - transLineAdjustment)
+    : undefined;
+  const effectiveMaxArabicLines = maxArabicLines !== undefined
+    ? Math.max(1, maxArabicLines - arabicLineAdjustment)
+    : undefined;
+
+  const showTranslationReadMore = transReadMoreOverride === false
+    ? false
+    : (transLineAdjustment > 0 && !expanded)
+      ? true
+      : (truncateTranslation && !expanded);
+
+  const showArabicReadMore = arabicReadMoreOverride === false
+    ? false
+    : (arabicLineAdjustment > 0 && !expanded)
+      ? true
+      : (truncateArabic && !expanded);
+
   const swiping     = useRef(false);
   const expandedRef = useRef(false);
 
@@ -271,6 +299,17 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     expandedRef.current = false;
     setExpanded(false);
 
+    // Belt-and-braces reset — component remounts per card anyway, but keep
+    // the correction-layer state explicitly fresh.
+    setTransLineAdjustment(0);
+    setArabicLineAdjustment(0);
+    setFullTransLines(0);
+    fullTransLinesRef.current = 0;
+    setFullArabicLines(0);
+    fullArabicLinesRef.current = 0;
+    setTransReadMoreOverride(null);
+    setArabicReadMoreOverride(null);
+
     if (instant) {
       fadeAnim.setValue(1);
       onMounted?.();
@@ -325,7 +364,11 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     if (lastSlotHeightRef.current > 0 && Math.abs(slotHeight - lastSlotHeightRef.current) > 50) {
       correctionAppliedRef.current = false;
       setLineAdjustment(0);
+      setTransLineAdjustment(0);
+      setArabicLineAdjustment(0);
       setReadMoreOverride(null);
+      setTransReadMoreOverride(null);
+      setArabicReadMoreOverride(null);
     }
     if (slotHeight > 0) lastSlotHeightRef.current = slotHeight;
 
@@ -337,6 +380,26 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
     const measuredHintsHeight = showHints ? hintsHeight : 0;
     const usableSlot = slotHeight - measuredHintsHeight;
 
+    // Translation overflow correction
+    if (!truncateArabic && contentHeight > usableSlot + 2 && maxTranslationLines !== undefined) {
+      const transOverflow = Math.ceil((contentHeight - usableSlot) / translationLineHeight);
+      if (transOverflow > 0) {
+        setTransLineAdjustment(prev => prev + transOverflow);
+        correctionAppliedRef.current = true;
+        return; // let re-render settle before checking further
+      }
+    }
+
+    // Arabic overflow correction (same pattern)
+    if (truncateArabic && contentHeight > usableSlot + 2 && maxArabicLines !== undefined) {
+      const arabicOverflow = Math.ceil((contentHeight - usableSlot) / arabicLineHeight);
+      if (arabicOverflow > 0) {
+        setArabicLineAdjustment(prev => prev + arabicOverflow);
+        correctionAppliedRef.current = true;
+        return;
+      }
+    }
+
     if (contentHeight > usableSlot + 2) {
       // Formula underestimated content height (e.g. iQOO Neo 7) — shrink explanation lines.
       const extraLines = Math.ceil((contentHeight - usableSlot) / explanationLineHeight);
@@ -346,8 +409,16 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
       // Formula overestimated — full explanation already fits, Read more is redundant.
       if (readMoreOverride !== false) setReadMoreOverride(false);
       correctionAppliedRef.current = true;
+    } else if (truncateTranslation && fullTransLines > 0 && fullTransLines <= effectiveMaxTranslationLines) {
+      // Formula overestimated — full translation already fits, Read more is redundant.
+      if (transReadMoreOverride !== false) setTransReadMoreOverride(false);
+      correctionAppliedRef.current = true;
+    } else if (truncateArabic && fullArabicLines > 0 && fullArabicLines <= effectiveMaxArabicLines) {
+      // Formula overestimated — full arabic already fits, Read more is redundant.
+      if (arabicReadMoreOverride !== false) setArabicReadMoreOverride(false);
+      correctionAppliedRef.current = true;
     }
-  }, [slotHeight, contentHeight, fullExplLines, expanded]);
+  }, [slotHeight, contentHeight, fullExplLines, fullTransLines, fullArabicLines, expanded]);
 
   const handleHeartPress = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -469,7 +540,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               <>
                 <Text
                   style={showTransliteration && card.transliteration ? styles.translitText : styles.arabicText}
-                  numberOfLines={truncateArabic && !expanded ? maxArabicLines : undefined}
+                  numberOfLines={truncateArabic && !expanded ? effectiveMaxArabicLines : undefined}
                   onTextLayout={(e) => {
                     const lines = e.nativeEvent.lines.length;
                     if (showTransliteration && card.transliteration) {
@@ -487,7 +558,25 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
                 >
                   {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
                 </Text>
-                {truncateArabic && !expanded && (
+                {/* Hidden measurement text — reveals real rendered line count for correction */}
+                {truncateArabic ? (
+                  <Text
+                    style={[
+                      showTransliteration && card.transliteration ? styles.translitText : styles.arabicText,
+                      { position: 'absolute', opacity: 0, left: spacing.lg, right: spacing.lg, top: 0 },
+                    ]}
+                    pointerEvents="none"
+                    onTextLayout={(e) => {
+                      if (fullArabicLinesRef.current === 0) {
+                        fullArabicLinesRef.current = e.nativeEvent.lines.length;
+                        setFullArabicLines(e.nativeEvent.lines.length);
+                      }
+                    }}
+                  >
+                    {showTransliteration && card.transliteration ? card.transliteration : card.arabic}
+                  </Text>
+                ) : null}
+                {showArabicReadMore && (
                   <TouchableOpacity
                     onPress={() => { expandedRef.current = true; setExpanded(true); }}
                     activeOpacity={0.7}
@@ -520,7 +609,7 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
             {!isStory && !truncateArabic && (
               <Text
                 style={styles.translation}
-                numberOfLines={truncateTranslation && !expanded ? maxTranslationLines : undefined}
+                numberOfLines={truncateTranslation && !expanded ? effectiveMaxTranslationLines : undefined}
                 onTextLayout={(e) => {
                   const lines = e.nativeEvent.lines.length;
                   if (lines !== measuredTranslationLinesRef.current) {
@@ -533,8 +622,24 @@ export default function SwipeCard({ card, onNext, onPrev, showHints, instant, on
               </Text>
             )}
 
+            {/* Hidden measurement text — reveals real rendered line count for correction */}
+            {!isStory && !truncateArabic && card.translation ? (
+              <Text
+                style={[styles.translation, { position: 'absolute', opacity: 0, left: spacing.lg, right: spacing.lg, top: 0 }]}
+                pointerEvents="none"
+                onTextLayout={(e) => {
+                  if (fullTransLinesRef.current === 0) {
+                    fullTransLinesRef.current = e.nativeEvent.lines.length;
+                    setFullTransLines(e.nativeEvent.lines.length);
+                  }
+                }}
+              >
+                {card.translation}
+              </Text>
+            ) : null}
+
             {/* Read more on translation */}
-            {!isStory && truncateTranslation && !expanded && (
+            {!isStory && showTranslationReadMore && (
               <TouchableOpacity
                 onPress={() => { expandedRef.current = true; setExpanded(true); }}
                 activeOpacity={0.7}
