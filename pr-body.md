@@ -1,30 +1,29 @@
-## 🌙 Weekly card batch #12
+## 🌙 Weekly card batch #13
 
-**Theme:** The Companions of the Prophet: Examples of Faith and Sacrifice
+**Theme:** Patience in Hardship
 
-**Reasoning:** This theme naturally lends itself to Story cards (which can feature specific companions like Abu Bakr, Umar, Uthman, Ali, Bilal, etc.), Hadith cards (narrations from or about the companions), and Ayah cards (verses about the early believers). It helps balance the distribution by creating opportunities for Hadith, Story, and Dua content while Ayah is currently over-represented. The theme is concrete, inspiring, and hasn't been covered in recent weeks. It offers rich, relatable examples of faith in action that resonate with users seeking practical Islamic guidance.
+**Reasoning:** This theme allows balanced growth across all categories - Hadith (81) and Dua (84) are most under-represented and can be well-served with prophetic teachings on patience and supplications during trials. Ayah cards can feature verses about sabr, while Story cards can highlight prophetic examples and companion narratives of perseverance. The theme is universally relevant, practical for daily life, and hasn't appeared in recent batches.
 
 **Stats:**
-- Total cards added: 15
-- Cards dropped (failed validation): 0
-- By category: Story: 9, Ayah: 2, Dua: 3, Hadith: 1
+- Total cards added: 14
+- Cards dropped (failed validation): 1
+- By category: Story: 6, Ayah: 3, Dua: 4, Hadith: 1
 
 **Card IDs added:**
-- story_khabab_torture
-- story_sumayyah_shaheedah
-- story_musab_ibn_umayr
-- ayah_9_100
-- dua_companions_love
-- story_abdurrahman_ibn_awf
-- story_umayr_ibn_humam
-- dua_love_for_believers
-- story_sad_ibn_abi_waqqas
-- ayah_3_169
-- story_hamzah_uhud
-- story_zayd_ibn_harithah
-- hadith_companions_best_generation
-- story_talha_shield_prophet
-- dua_following_prophet
+- story_sabr_yaqub_sons
+- ayah_2_45
+- dua_hardship_2
+- story_sabr_asma_hijrah
+- dua_sabr_1
+- story_sabr_khadijah_boycott
+- hadith_sabr_reward
+- story_sabr_fatimah_grinding
+- ayah_3_146
+- dua_distress_comprehensive
+- story_sabr_zaynab_loss
+- ayah_13_24
+- dua_firmness_trials
+- story_sabr_ruqayyah_hijrah
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
