@@ -34,7 +34,7 @@ app.post('/send', async (req, res) => {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
 
-  const { theme } = req.body || {};
+  const { theme, title, body } = req.body || {};
 
   try {
     const tokens = getAllTokens();
@@ -44,8 +44,9 @@ app.post('/send', async (req, res) => {
       const batch = tokens.slice(i, i + BATCH_SIZE);
       const messages = batch.map((token) => ({
         to: token,
-        title: '🌙 New cards this week',
-        body: `Theme : ${theme}`,
+        title: title || '🌙 New cards this week',
+        body: body || `Theme : ${theme}`,
+        sound: 'default',
       }));
 
       const response = await fetch(EXPO_PUSH_URL, {
