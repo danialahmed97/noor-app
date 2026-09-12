@@ -1,30 +1,28 @@
-## 🌙 Weekly card batch #14
+## 🌙 Weekly card batch #15
 
-**Theme:** The Day of Judgment: Signs and Preparation
+**Theme:** Names of Allah: Al-Wadud (The Most Loving)
 
-**Reasoning:** This theme allows for balanced content distribution across all categories: Ayahs about the Last Day from Quran, Hadiths describing signs and events, Stories of how the Sahaba prepared for the afterlife, and Duas for a good ending. Hadith category needs the most growth (82 cards vs 131 Ayahs), and this theme naturally lends itself to powerful prophetic narrations. The theme is concrete, actionable for daily life, and hasn't been covered in recent batches.
+**Reasoning:** Hadith category is significantly underrepresented with only 83 cards versus 134 Ayahs. This theme naturally lends itself to balanced distribution: Ayahs mentioning Allah's love and mercy, Hadiths about Allah's love for His servants and how to earn it, Stories of individuals who experienced divine love and forgiveness, and Duas invoking Allah by this beautiful name. The theme is uplifting, universally relatable, and hasn't been covered in recent batches.
 
 **Stats:**
-- Total cards added: 15
-- Cards dropped (failed validation): 0
-- By category: Story: 6, Ayah: 3, Dua: 5, Hadith: 1
+- Total cards added: 13
+- Cards dropped (failed validation): 2
+- By category: Story: 8, Dua: 4, Ayah: 1
 
 **Card IDs added:**
-- story_sun_rising_west
-- ayah_99_1
-- ayah_101_4
-- dua_judgment_safety
-- story_trumpet_blasts
-- dua_shade_arsh
-- story_dajjal_trials
-- ayah_75_22
-- dua_night_before_judgment
-- story_beast_of_earth
-- hadith_judgment_sweat
-- story_yajuj_majuj
-- dua_refuge_grave_torment
-- story_isa_returns
-- dua_ending_well
+- story_al_wadud_meaning
+- dua_al_wadud_1
+- story_prophet_loved_back
+- story_allah_loves_first
+- dua_love_of_allah
+- story_sins_do_not_cancel_love
+- ayah_3_31
+- story_woman_who_loved_prayer
+- dua_seeking_love_allah
+- story_companionship_of_al_wadud
+- story_musa_longing_for_allah
+- dua_love_for_quran
+- story_love_shown_through_mercy
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
