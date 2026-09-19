@@ -1,28 +1,30 @@
-## 🌙 Weekly card batch #15
+## 🌙 Weekly card batch #16
 
-**Theme:** Names of Allah: Al-Wadud (The Most Loving)
+**Theme:** The Power of Gratitude (Shukr) in Daily Life
 
-**Reasoning:** Hadith category is significantly underrepresented with only 83 cards versus 134 Ayahs. This theme naturally lends itself to balanced distribution: Ayahs mentioning Allah's love and mercy, Hadiths about Allah's love for His servants and how to earn it, Stories of individuals who experienced divine love and forgiveness, and Duas invoking Allah by this beautiful name. The theme is uplifting, universally relatable, and hasn't been covered in recent batches.
+**Reasoning:** Hadith category is significantly underrepresented with only 83 cards compared to others. This theme naturally lends itself to balanced content: Quranic verses about gratitude (Ayah), prophetic sayings on thankfulness (Hadith), stories of grateful believers or prophets (Story), and specific duas of gratitude (Dua). It's a practical, uplifting theme that hasn't been covered recently and resonates with daily struggles and blessings that users face.
 
 **Stats:**
-- Total cards added: 13
-- Cards dropped (failed validation): 2
-- By category: Story: 8, Dua: 4, Ayah: 1
+- Total cards added: 15
+- Cards dropped (failed validation): 0
+- By category: Story: 6, Ayah: 4, Dua: 4, Hadith: 1
 
 **Card IDs added:**
-- story_al_wadud_meaning
-- dua_al_wadud_1
-- story_prophet_loved_back
-- story_allah_loves_first
-- dua_love_of_allah
-- story_sins_do_not_cancel_love
-- ayah_3_31
-- story_woman_who_loved_prayer
-- dua_seeking_love_allah
-- story_companionship_of_al_wadud
-- story_musa_longing_for_allah
-- dua_love_for_quran
-- story_love_shown_through_mercy
+- story_shukr_blind_man_three_blessings
+- ayah_14_34
+- dua_gratitude_morning_evening
+- story_shukr_sulayman_throne_sheba
+- ayah_27_40
+- dua_gratitude_after_meal
+- story_shukr_umar_saw_man_praising_allah
+- dua_gratitude_waking
+- ayah_55_78
+- story_shukr_companion_lost_everything_smiled
+- hadith_shukr_who_does_not_thank_people
+- dua_gratitude_any_favor
+- story_shukr_old_woman_prophet_passed
+- ayah_16_14
+- story_shukr_prophet_feet_swollen_gratitude
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
