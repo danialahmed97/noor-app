@@ -1,30 +1,30 @@
-## 🌙 Weekly card batch #16
+## 🌙 Weekly card batch #17
 
-**Theme:** The Power of Gratitude (Shukr) in Daily Life
+**Theme:** The Etiquette of the Mosque and Prayer
 
-**Reasoning:** Hadith category is significantly underrepresented with only 83 cards compared to others. This theme naturally lends itself to balanced content: Quranic verses about gratitude (Ayah), prophetic sayings on thankfulness (Hadith), stories of grateful believers or prophets (Story), and specific duas of gratitude (Dua). It's a practical, uplifting theme that hasn't been covered recently and resonates with daily struggles and blessings that users face.
+**Reasoning:** This theme allows us to significantly boost Hadith content (currently at 84, the lowest count) as there are numerous authentic hadiths about mosque etiquette, prayer manners, and the virtues of congregational prayer. It also supports Dua cards with supplications related to entering/leaving the mosque and during prayer. Ayah cards can highlight Quranic verses about establishing prayer and the importance of mosques. Story cards can feature accounts of the Prophet's (PBUH) conduct in the mosque and companions' devotion. This practical theme is timely, actionable, and hasn't been covered in recent weeks.
 
 **Stats:**
 - Total cards added: 15
 - Cards dropped (failed validation): 0
-- By category: Story: 6, Ayah: 4, Dua: 4, Hadith: 1
+- By category: Story: 7, Ayah: 3, Dua: 4, Hadith: 1
 
 **Card IDs added:**
-- story_shukr_blind_man_three_blessings
-- ayah_14_34
-- dua_gratitude_morning_evening
-- story_shukr_sulayman_throne_sheba
-- ayah_27_40
-- dua_gratitude_after_meal
-- story_shukr_umar_saw_man_praising_allah
-- dua_gratitude_waking
-- ayah_55_78
-- story_shukr_companion_lost_everything_smiled
-- hadith_shukr_who_does_not_thank_people
-- dua_gratitude_any_favor
-- story_shukr_old_woman_prophet_passed
-- ayah_16_14
-- story_shukr_prophet_feet_swollen_gratitude
+- story_mosque_cleaning_woman
+- story_man_spit_mosque_wall
+- ayah_9_18
+- dua_entering_mosque
+- dua_leaving_mosque
+- story_seventy_thousand_reward_angel
+- ayah_24_36
+- story_first_row_no_one_behind
+- dua_straighten_rows
+- story_umar_garlic_onion_mosque
+- hadith_two_rakah_greeting_mosque
+- story_bilal_adhan_first_mosque
+- dua_after_adhan_wasila
+- story_man_praying_badly_prophet_corrected
+- ayah_2_238
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
