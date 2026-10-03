@@ -1,30 +1,30 @@
-## 🌙 Weekly card batch #17
+## 🌙 Weekly card batch #18
 
-**Theme:** The Etiquette of the Mosque and Prayer
+**Theme:** The Sunnah of the Prophet: Daily Practices
 
-**Reasoning:** This theme allows us to significantly boost Hadith content (currently at 84, the lowest count) as there are numerous authentic hadiths about mosque etiquette, prayer manners, and the virtues of congregational prayer. It also supports Dua cards with supplications related to entering/leaving the mosque and during prayer. Ayah cards can highlight Quranic verses about establishing prayer and the importance of mosques. Story cards can feature accounts of the Prophet's (PBUH) conduct in the mosque and companions' devotion. This practical theme is timely, actionable, and hasn't been covered in recent weeks.
+**Reasoning:** Hadith category is significantly underrepresented with only 85 cards compared to others (Ayah: 142, Story: 136, Dua: 105). This theme naturally emphasizes Hadith content while allowing incorporation of related Ayahs, practical Duas from the Prophet's life, and inspiring stories of how the Companions followed his example. It's practical, actionable, and distinct from recent themes which focused on theological concepts, mosque etiquette, and eschatology.
 
 **Stats:**
 - Total cards added: 15
 - Cards dropped (failed validation): 0
-- By category: Story: 7, Ayah: 3, Dua: 4, Hadith: 1
+- By category: Story: 7, Dua: 4, Ayah: 3, Hadith: 1
 
 **Card IDs added:**
-- story_mosque_cleaning_woman
-- story_man_spit_mosque_wall
-- ayah_9_18
-- dua_entering_mosque
-- dua_leaving_mosque
-- story_seventy_thousand_reward_angel
-- ayah_24_36
-- story_first_row_no_one_behind
-- dua_straighten_rows
-- story_umar_garlic_onion_mosque
-- hadith_two_rakah_greeting_mosque
-- story_bilal_adhan_first_mosque
-- dua_after_adhan_wasila
-- story_man_praying_badly_prophet_corrected
-- ayah_2_238
+- story_sunnah_miswak
+- story_sunnah_right_side
+- story_sunnah_salam_children
+- story_sunnah_tahajjud_feet
+- story_sunnah_greeting_first
+- story_sunnah_fajr_two_rakahs
+- story_sunnah_visiting_sick
+- dua_sunnah_waking
+- dua_sunnah_before_eating
+- dua_sunnah_entering_home
+- dua_sunnah_leaving_home
+- ayah_33_21
+- ayah_3_132
+- ayah_59_7
+- hadith_sunnah_love_prophet
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
