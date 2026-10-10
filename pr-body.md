@@ -1,30 +1,29 @@
-## 🌙 Weekly card batch #18
+## 🌙 Weekly card batch #19
 
-**Theme:** The Sunnah of the Prophet: Daily Practices
+**Theme:** Patience in Hardship
 
-**Reasoning:** Hadith category is significantly underrepresented with only 85 cards compared to others (Ayah: 142, Story: 136, Dua: 105). This theme naturally emphasizes Hadith content while allowing incorporation of related Ayahs, practical Duas from the Prophet's life, and inspiring stories of how the Companions followed his example. It's practical, actionable, and distinct from recent themes which focused on theological concepts, mosque etiquette, and eschatology.
+**Reasoning:** Hadith category is significantly underrepresented with only 86 cards compared to 145 Ayahs and 143 Stories. The theme 'Patience in Hardship' is rich with authentic hadiths about sabr, while also drawing naturally from Quranic verses about patience, prophetic stories of endurance (like Prophet Ayyub), and duas for steadfastness. This theme is universally relevant, emotionally resonant, and hasn't appeared in recent weeks, making it ideal for balanced growth across all categories with particular opportunity to boost Hadith content.
 
 **Stats:**
-- Total cards added: 15
-- Cards dropped (failed validation): 0
-- By category: Story: 7, Dua: 4, Ayah: 3, Hadith: 1
+- Total cards added: 14
+- Cards dropped (failed validation): 1
+- By category: Story: 6, Dua: 4, Ayah: 3, Hadith: 1
 
 **Card IDs added:**
-- story_sunnah_miswak
-- story_sunnah_right_side
-- story_sunnah_salam_children
-- story_sunnah_tahajjud_feet
-- story_sunnah_greeting_first
-- story_sunnah_fajr_two_rakahs
-- story_sunnah_visiting_sick
-- dua_sunnah_waking
-- dua_sunnah_before_eating
-- dua_sunnah_entering_home
-- dua_sunnah_leaving_home
-- ayah_33_21
-- ayah_3_132
-- ayah_59_7
-- hadith_sunnah_love_prophet
+- story_sabr_woman_child_died
+- story_hind_bint_utbah
+- dua_distress_yunus
+- story_blind_man_patience_quran
+- ayah_2_177
+- dua_calamity_1
+- story_companion_lost_seven_sons
+- ayah_29_2
+- dua_worry_anxiety_prophet
+- story_woman_whose_child_burned
+- hadith_patience_certainty
+- story_ibn_umar_patience_injustice
+- ayah_90_4
+- dua_firmness_iman
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
