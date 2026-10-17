@@ -1,29 +1,30 @@
-## 🌙 Weekly card batch #19
+## 🌙 Weekly card batch #20
 
-**Theme:** Patience in Hardship
+**Theme:** The Day of Judgment: Signs and Preparation
 
-**Reasoning:** Hadith category is significantly underrepresented with only 86 cards compared to 145 Ayahs and 143 Stories. The theme 'Patience in Hardship' is rich with authentic hadiths about sabr, while also drawing naturally from Quranic verses about patience, prophetic stories of endurance (like Prophet Ayyub), and duas for steadfastness. This theme is universally relevant, emotionally resonant, and hasn't appeared in recent weeks, making it ideal for balanced growth across all categories with particular opportunity to boost Hadith content.
+**Reasoning:** This theme allows for balanced growth across all categories, particularly benefiting the under-represented Hadith category (87 cards) which can draw from numerous authentic narrations about Qiyamah. Ayah cards can feature powerful verses about the Last Day, Story cards can include parables and accounts from the Quran about resurrection, and Dua cards can focus on seeking Allah's mercy and protection. The theme is concrete, impactful, and hasn't been covered in recent weeks, offering fresh spiritual reflection on accountability and the hereafter.
 
 **Stats:**
-- Total cards added: 14
-- Cards dropped (failed validation): 1
-- By category: Story: 6, Dua: 4, Ayah: 3, Hadith: 1
+- Total cards added: 15
+- Cards dropped (failed validation): 0
+- By category: Story: 7, Ayah: 4, Dua: 4
 
 **Card IDs added:**
-- story_sabr_woman_child_died
-- story_hind_bint_utbah
-- dua_distress_yunus
-- story_blind_man_patience_quran
-- ayah_2_177
-- dua_calamity_1
-- story_companion_lost_seven_sons
-- ayah_29_2
-- dua_worry_anxiety_prophet
-- story_woman_whose_child_burned
-- hadith_patience_certainty
-- story_ibn_umar_patience_injustice
-- ayah_90_4
-- dua_firmness_iman
+- story_judgment_gathering
+- story_major_signs_ten
+- ayah_75_6
+- dua_refuge_hellfire
+- story_intercession_nations
+- ayah_23_99
+- dua_fear_accountability
+- story_pages_flying
+- ayah_50_22
+- story_minor_signs_prophet_saw
+- dua_good_deeds_scales
+- story_trumpet_two_blows
+- ayah_22_1
+- dua_shade_throne
+- story_earth_replaced
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
