@@ -1,30 +1,30 @@
-## 🌙 Weekly card batch #20
+## 🌙 Weekly card batch #21
 
-**Theme:** The Day of Judgment: Signs and Preparation
+**Theme:** The Virtues of Dhikr and Remembrance of Allah
 
-**Reasoning:** This theme allows for balanced growth across all categories, particularly benefiting the under-represented Hadith category (87 cards) which can draw from numerous authentic narrations about Qiyamah. Ayah cards can feature powerful verses about the Last Day, Story cards can include parables and accounts from the Quran about resurrection, and Dua cards can focus on seeking Allah's mercy and protection. The theme is concrete, impactful, and hasn't been covered in recent weeks, offering fresh spiritual reflection on accountability and the hereafter.
+**Reasoning:** Hadith category is significantly underrepresented (87 cards vs 152-156 in other categories). This theme naturally lends itself to strong Hadith content about different forms of dhikr and their rewards, while also allowing for relevant Ayahs about remembrance, Duas that are forms of dhikr themselves, and Stories of companions known for their devotion to remembrance. This creates balanced growth across categories with emphasis on catching up Hadith content, and hasn't been covered in recent themes.
 
 **Stats:**
 - Total cards added: 15
 - Cards dropped (failed validation): 0
-- By category: Story: 7, Ayah: 4, Dua: 4
+- By category: Story: 6, Ayah: 3, Dua: 5, Hadith: 1
 
 **Card IDs added:**
-- story_judgment_gathering
-- story_major_signs_ten
-- ayah_75_6
-- dua_refuge_hellfire
-- story_intercession_nations
-- ayah_23_99
-- dua_fear_accountability
-- story_pages_flying
-- ayah_50_22
-- story_minor_signs_prophet_saw
-- dua_good_deeds_scales
-- story_trumpet_two_blows
-- ayah_22_1
-- dua_shade_throne
-- story_earth_replaced
+- story_dhikr_mountains_echoed
+- ayah_33_41_42
+- dua_dhikr_morning_evening_comprehensive
+- story_man_never_forgot_allah
+- ayah_13_28_heart
+- dua_subhanallah_100
+- story_two_words_light_heavy
+- hadith_best_dhikr
+- story_woman_dhikr_beads
+- dua_la_hawla
+- story_shaitan_hates_dhikr
+- ayah_2_152_remember_me
+- dua_dhikr_after_fajr
+- story_gatherings_of_dhikr_angels
+- dua_evening_protection_comprehensive
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
