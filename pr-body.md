@@ -1,30 +1,30 @@
-## 🌙 Weekly card batch #20
+## 🌙 Weekly card batch #21
 
-**Theme:** The Day of Judgment: Signs and Preparation
+**Theme:** Gratitude and Contentment
 
-**Reasoning:** This theme allows for balanced growth across all categories, particularly benefiting the under-represented Hadith category (87 cards) which can draw from numerous authentic narrations about Qiyamah. Ayah cards can feature powerful verses about the Last Day, Story cards can include parables and accounts from the Quran about resurrection, and Dua cards can focus on seeking Allah's mercy and protection. The theme is concrete, impactful, and hasn't been covered in recent weeks, offering fresh spiritual reflection on accountability and the hereafter.
+**Reasoning:** Hadith category is significantly under-represented at 87 cards compared to others (152, 156, 117). This theme naturally draws from Hadith teachings about shukr and being content with Allah's provisions, while also allowing for relevant Ayahs about gratitude, Duas of thankfulness, and Stories of prophets/companions demonstrating contentment. The theme is practical, universally relatable, and hasn't appeared in recent batches.
 
 **Stats:**
 - Total cards added: 15
 - Cards dropped (failed validation): 0
-- By category: Story: 7, Ayah: 4, Dua: 4
+- By category: Story: 6, Dua: 4, Ayah: 4, Hadith: 1
 
 **Card IDs added:**
-- story_judgment_gathering
-- story_major_signs_ten
-- ayah_75_6
-- dua_refuge_hellfire
-- story_intercession_nations
-- ayah_23_99
-- dua_fear_accountability
-- story_pages_flying
-- ayah_50_22
-- story_minor_signs_prophet_saw
-- dua_good_deeds_scales
-- story_trumpet_two_blows
-- ayah_22_1
-- dua_shade_throne
-- story_earth_replaced
+- story_grateful_slave_freedman
+- dua_gratitude_comprehensive
+- ayah_14_7_gratitude
+- story_abu_dharr_contentment
+- dua_contentment_rizq
+- ayah_89_27_30
+- story_woman_blind_grateful
+- hadith_gratitude_increases
+- dua_morning_gratitude_health
+- story_umar_leather_shoes
+- ayah_93_5_gratitude
+- story_man_complained_shoes
+- dua_gratitude_after_food
+- story_companion_lost_everything_smiled
+- ayah_31_12_gratitude
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
