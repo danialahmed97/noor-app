@@ -1,30 +1,29 @@
-## 🌙 Weekly card batch #21
+## 🌙 Weekly card batch #22
 
-**Theme:** Gratitude and Contentment
+**Theme:** Sincerity and Ikhlas in Worship
 
-**Reasoning:** Hadith category is significantly under-represented at 87 cards compared to others (152, 156, 117). This theme naturally draws from Hadith teachings about shukr and being content with Allah's provisions, while also allowing for relevant Ayahs about gratitude, Duas of thankfulness, and Stories of prophets/companions demonstrating contentment. The theme is practical, universally relatable, and hasn't appeared in recent batches.
+**Reasoning:** Hadith category is significantly underrepresented (88 vs 156-162 in others). This theme naturally draws from hadith literature about intention and sincerity, while also allowing for supporting ayahs about pure worship, duas for sincerity, and stories of companions who exemplified ikhlas. It's a foundational Islamic concept that hasn't been recently covered and provides practical spiritual guidance.
 
 **Stats:**
-- Total cards added: 15
-- Cards dropped (failed validation): 0
-- By category: Story: 6, Dua: 4, Ayah: 4, Hadith: 1
+- Total cards added: 14
+- Cards dropped (failed validation): 1
+- By category: Story: 7, Dua: 4, Ayah: 2, Hadith: 1
 
 **Card IDs added:**
-- story_grateful_slave_freedman
-- dua_gratitude_comprehensive
-- ayah_14_7_gratitude
-- story_abu_dharr_contentment
-- dua_contentment_rizq
-- ayah_89_27_30
-- story_woman_blind_grateful
-- hadith_gratitude_increases
-- dua_morning_gratitude_health
-- story_umar_leather_shoes
-- ayah_93_5_gratitude
-- story_man_complained_shoes
-- dua_gratitude_after_food
-- story_companion_lost_everything_smiled
-- ayah_31_12_gratitude
+- story_man_show_prayer
+- story_umar_hidden_charity
+- dua_ikhlas_before_deed
+- story_three_men_first_judged
+- ayah_18_110
+- dua_refuge_from_riya
+- story_bilal_why_you_islamed
+- hadith_deeds_by_intentions
+- story_woman_swept_masjid
+- ayah_76_9
+- dua_purify_heart
+- story_man_who_never_did_good
+- story_companion_secret_quran
+- dua_acceptance_deeds
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
