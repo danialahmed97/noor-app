@@ -1,29 +1,30 @@
-## 🌙 Weekly card batch #22
+## 🌙 Weekly card batch #23
 
-**Theme:** Sincerity and Ikhlas in Worship
+**Theme:** The Prophetic Example: Character and Conduct
 
-**Reasoning:** Hadith category is significantly underrepresented (88 vs 156-162 in others). This theme naturally draws from hadith literature about intention and sincerity, while also allowing for supporting ayahs about pure worship, duas for sincerity, and stories of companions who exemplified ikhlas. It's a foundational Islamic concept that hasn't been recently covered and provides practical spiritual guidance.
+**Reasoning:** Hadith category is significantly under-represented with only 89 cards compared to 158-169 in other categories. This theme naturally emphasizes Hadith content while also allowing for complementary Ayahs about following the Prophet's example, Stories illustrating his character in specific situations, and Duas he taught. The theme is practical, relatable, and distinct from recent themes—focusing on emulating the Prophet's daily conduct, interactions, and moral excellence rather than abstract concepts like patience or sincerity.
 
 **Stats:**
-- Total cards added: 14
-- Cards dropped (failed validation): 1
-- By category: Story: 7, Dua: 4, Ayah: 2, Hadith: 1
+- Total cards added: 15
+- Cards dropped (failed validation): 0
+- By category: Story: 8, Dua: 4, Ayah: 2, Hadith: 1
 
 **Card IDs added:**
-- story_man_show_prayer
-- story_umar_hidden_charity
-- dua_ikhlas_before_deed
-- story_three_men_first_judged
-- ayah_18_110
-- dua_refuge_from_riya
-- story_bilal_why_you_islamed
-- hadith_deeds_by_intentions
-- story_woman_swept_masjid
-- ayah_76_9
-- dua_purify_heart
-- story_man_who_never_did_good
-- story_companion_secret_quran
-- dua_acceptance_deeds
+- story_prophet_forgave_taif
+- dua_character_1
+- story_prophet_cleaned_garbage
+- ayah_68_4
+- story_prophet_servant_anas
+- dua_good_character_2
+- story_prophet_never_avenged_himself
+- ayah_3_159
+- story_prophet_forgave_hind
+- dua_softness_heart
+- story_prophet_kissed_grandchildren
+- hadith_best_among_you
+- story_prophet_gave_cloak_to_enemy
+- dua_manners_1
+- story_prophet_corrected_with_mercy
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
