@@ -24,3 +24,6 @@ build-*.apk
 *.apks
 noor-signed.apks
 noor_apk/
+
+# Raw responses saved by scripts/generate-cards.js on failure
+state/failed-batch-*.txt
