@@ -26,6 +26,58 @@ const CARDS_PER_BATCH = 15;
 const MIN_VALID_CARDS = 10;
 const THEME_HISTORY_LIMIT = 20;
 const RECENT_THEMES_TO_AVOID = 4;
+const GENERATION_ATTEMPTS = 2;
+
+// JSON schemas for structured outputs (output_config.format). The API
+// constrains the model's output to these schemas, so responses always parse.
+const NULLABLE_STRING = { anyOf: [{ type: 'string' }, { type: 'null' }] };
+
+const THEME_SCHEMA = {
+  type: 'object',
+  properties: {
+    theme: { type: 'string' },
+    reasoning: { type: 'string' },
+  },
+  required: ['theme', 'reasoning'],
+  additionalProperties: false,
+};
+
+const CARDS_SCHEMA = {
+  type: 'object',
+  properties: {
+    cards: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          category: { type: 'string', enum: ['Ayah', 'Hadith', 'Story', 'Dua'] },
+          arabic: NULLABLE_STRING,
+          transliteration: NULLABLE_STRING,
+          translation: { type: 'string' },
+          explanation: { type: 'string' },
+          source: { type: 'string' },
+          sourceType: { type: 'string', enum: ['Quran', 'Hadith', 'Story', 'Dua'] },
+          tag: { type: 'string' },
+        },
+        required: [
+          'id',
+          'category',
+          'arabic',
+          'transliteration',
+          'translation',
+          'explanation',
+          'source',
+          'sourceType',
+          'tag',
+        ],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['cards'],
+  additionalProperties: false,
+};
 
 const FIELD_ORDER = [
   'id',
@@ -109,24 +161,7 @@ async function main() {
     reasoning = picked.reasoning;
   }
 
-  const rawCards = await generateCards(apiKey, { theme, existingIds });
-
-  let cards;
-  try {
-    cards = JSON.parse(stripCodeFences(rawCards));
-  } catch (err) {
-    const savedPath = saveFailedBatch(rawCards);
-    console.error(`ERROR: Failed to parse card generation response as JSON (${err.message})`);
-    console.error(`Raw response saved to ${savedPath}`);
-    process.exit(1);
-  }
-
-  if (!Array.isArray(cards)) {
-    const savedPath = saveFailedBatch(rawCards);
-    console.error('ERROR: Card generation response was not a JSON array');
-    console.error(`Raw response saved to ${savedPath}`);
-    process.exit(1);
-  }
+  const cards = await generateCardsWithRetry(apiKey, { theme, existingIds });
 
   const { validCards, droppedCards, errors } = validateBatch(cards, existingIds);
 
@@ -186,7 +221,7 @@ function saveState(state) {
   fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2) + '\n');
 }
 
-async function callAnthropic({ apiKey, system, messages, maxTokens }) {
+async function callAnthropic({ apiKey, system, messages, maxTokens, schema }) {
   const response = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
     headers: {
@@ -199,6 +234,7 @@ async function callAnthropic({ apiKey, system, messages, maxTokens }) {
       max_tokens: maxTokens,
       system,
       messages,
+      ...(schema ? { output_config: { format: { type: 'json_schema', schema } } } : {}),
     }),
   });
 
@@ -212,7 +248,17 @@ async function callAnthropic({ apiKey, system, messages, maxTokens }) {
     throw new Error(`Unexpected Anthropic API response shape: ${JSON.stringify(data)}`);
   }
 
-  return data.content.map((block) => (block.type === 'text' ? block.text : '')).join('');
+  const text = data.content.map((block) => (block.type === 'text' ? block.text : '')).join('');
+
+  // Structured outputs only guarantee schema-valid JSON when the model
+  // finishes normally; a truncated or refused response may not parse.
+  if (data.stop_reason === 'max_tokens' || data.stop_reason === 'refusal') {
+    const err = new Error(`Anthropic response stopped early (stop_reason: ${data.stop_reason})`);
+    err.rawText = text;
+    throw err;
+  }
+
+  return text;
 }
 
 function stripCodeFences(text) {
@@ -253,6 +299,7 @@ async function pickTheme(apiKey, { categoryCounts, themeHistory }) {
     system,
     messages: [{ role: 'user', content: userPrompt }],
     maxTokens: THEME_MAX_TOKENS,
+    schema: THEME_SCHEMA,
   });
 
   let parsed;
@@ -280,7 +327,7 @@ function buildCardSystemPrompt() {
     'swipeable content cards (Ayah, Hadith, Story, Dua) to Muslims for daily reflection.',
     '',
     '## Card schema',
-    'Return a JSON array of card objects. Each object must have EXACTLY these fields:',
+    'Return a JSON object {"cards": [...]} whose array holds card objects. Each card must have EXACTLY these fields:',
     '',
     '- id (string): unique identifier, lowercase, format "{category_lower}_{descriptor}",',
     '  e.g. "ayah_2_255", "dua_morning_3", "hadith_intentions", "story_abu_bakr_cave"',
@@ -315,8 +362,8 @@ function buildCardSystemPrompt() {
     '"Sunan Abu Dawud • Du\'a • #1525".',
     '',
     '## Output format',
-    'Output ONLY a JSON array of card objects. No markdown code fences, no preamble, no commentary,',
-    'no trailing text — your entire response must be valid JSON starting with [ and ending with ].',
+    'Output ONLY a JSON object of the form {"cards": [ ...card objects... ]}. No markdown code fences,',
+    'no preamble, no commentary.',
     '',
     '## Style examples',
     'Match the tone, length, and formatting of these existing cards:',
@@ -329,14 +376,48 @@ async function generateCards(apiKey, { theme, existingIds }) {
   const system = buildCardSystemPrompt();
   const idList = Array.from(existingIds).join(', ');
 
-  const userPrompt = `Generate ${CARDS_PER_BATCH} cards on the theme: ${theme}. Avoid these existing IDs: ${idList}. Return only the JSON array.`;
+  const userPrompt = `Generate ${CARDS_PER_BATCH} cards on the theme: ${theme}. Avoid these existing IDs: ${idList}. Return only the JSON object.`;
 
   return callAnthropic({
     apiKey,
     system,
     messages: [{ role: 'user', content: userPrompt }],
     maxTokens: GENERATION_MAX_TOKENS,
+    schema: CARDS_SCHEMA,
   });
+}
+
+// Generates and parses a batch, retrying once if the response can't be used.
+// Each failed raw response is saved under state/ for debugging (the workflow
+// uploads these as an artifact when the job fails).
+async function generateCardsWithRetry(apiKey, { theme, existingIds }) {
+  for (let attempt = 1; attempt <= GENERATION_ATTEMPTS; attempt++) {
+    let rawCards = '';
+    let problem;
+    try {
+      rawCards = await generateCards(apiKey, { theme, existingIds });
+      const parsed = JSON.parse(stripCodeFences(rawCards));
+      const cards = Array.isArray(parsed) ? parsed : parsed && parsed.cards;
+      if (Array.isArray(cards)) {
+        return cards;
+      }
+      problem = 'response did not contain a "cards" array';
+    } catch (err) {
+      if (err.rawText === undefined && !(err instanceof SyntaxError)) {
+        throw err; // API/network errors: don't mask them as parse failures
+      }
+      rawCards = err.rawText !== undefined ? err.rawText : rawCards;
+      problem = err.message;
+    }
+
+    const savedPath = saveFailedBatch(rawCards);
+    console.error(
+      `Attempt ${attempt}/${GENERATION_ATTEMPTS}: unusable card generation response (${problem}). Raw response saved to ${savedPath}`
+    );
+  }
+
+  console.error(`ERROR: Card generation failed after ${GENERATION_ATTEMPTS} attempts`);
+  process.exit(1);
 }
 
 function saveFailedBatch(rawText) {

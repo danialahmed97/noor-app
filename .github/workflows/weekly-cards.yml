@@ -21,6 +21,13 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           node scripts/generate-cards.js > pr-body.md
+      - name: Upload failed batch responses
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-batches
+          path: state/failed-batch-*.txt
+          if-no-files-found: ignore
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
