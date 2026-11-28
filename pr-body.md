@@ -1,29 +1,29 @@
-## 🌙 Weekly card batch #24
+## 🌙 Weekly card batch #25
 
-**Theme:** Healing and Comfort: Ruqyah and Prophetic Remedies
+**Theme:** The Day of Judgment: Signs and Preparation
 
-**Reasoning:** This theme directly addresses Hadith category which is significantly underrepresented at 90 cards compared to Story (177) and Ayah (160). The theme allows for rich Hadith content about prophetic medicine, spiritual healing practices, and therapeutic supplications, while also naturally incorporating Duas for healing and relevant Quranic verses. It's practical, relatable to daily struggles, and distinct from the recent themes which focused on judgment, gratitude, sincerity, and character.
+**Reasoning:** Hadith category is significantly underrepresented at 91 cards compared to others (Story: 183, Dua: 133, Ayah: 163). This theme naturally lends itself to rich Hadith content about the signs of the Last Day, descriptions of resurrection, and prophetic guidance on preparation. It also allows for powerful Quranic verses (Ayah) about accountability, duas for protection and forgiveness, and brief stories about the righteous who prepared for the Hereafter. The theme is spiritually impactful, encourages self-reflection, and hasn't been covered in recent batches.
 
 **Stats:**
 - Total cards added: 14
 - Cards dropped (failed validation): 1
-- By category: Ayah: 3, Dua: 4, Story: 6, Hadith: 1
+- By category: Story: 7, Dua: 4, Ayah: 3
 
 **Card IDs added:**
-- ayah_17_82
-- ayah_41_44
-- dua_ruqyah_self
-- story_aishah_ruqyah_prophet
-- story_black_magic_prophet
-- dua_muawwidhat
-- story_man_stung_scorpion
-- ayah_1_1_7
-- dua_honey_healing
-- story_man_diarrhea_honey
-- hadith_black_seed
-- story_seventy_thousand_jannah_no_ruqyah
-- dua_sick_person
-- story_prophet_visited_sick
+- story_judgment_sun_overhead
+- dua_refuge_signs_hour
+- ayah_75_1
+- story_man_first_questioned
+- dua_good_ending_husnul_khatimah
+- ayah_82_17_19
+- story_minor_signs_already_here
+- dua_refuge_hellfire_comprehensive
+- story_dajjal_greatest_trial
+- ayah_69_18_19
+- story_isa_descends_kills_dajjal
+- story_recording_angels_book
+- dua_increase_good_deeds
+- story_trumpet_israfil_blast
 
 **Review checklist:**
 - [ ] Spot-check 5 random cards for accuracy
